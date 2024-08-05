@@ -2,7 +2,7 @@ clear
 close all
 clc
 
-
+addpath('./simulation_scripts');
 % Set Figure default values
 set(0,'DefaultTextInterpreter','latex');
 set(0,'DefaultLegendInterpreter','latex');
@@ -14,11 +14,10 @@ set(0,'defaultAxesYGrid','on')
 set(0,'defaultAxesNextPlot','add')
 
 %% Simulation settings
-
 % Simulation step 仿真步长
 sim.delta_t = 0.01;
 % Simulation length仿真时长
-sim.t_end = 10;
+sim.t_end = 20;
 pa.m=6000;%动平台质量
 pa.g=[0;0;9.8];%重力加速度
 %% Define 6DOF CDPR
@@ -36,7 +35,12 @@ sys.G = @(q) diag([1;1;1;1;1;1]);
 sys.Hdq = matlabFunction(jacobian(sys.H(q_sym,p_sym),q_sym).','vars',[{q_sym}, {p_sym}]);
 sys.Hdp =  matlabFunction(jacobian(sys.H(q_sym,p_sym),p_sym).','vars',[{q_sym}, {p_sym}]);
 sys.dVdq = matlabFunction(jacobian(sum(sys.V(q_sym)),q_sym).','vars',{q_sym});
-dx = @(q,p,u) [zeros(6) eye(6); -eye(6) -sys.D(q)]*[sys.Hdq(q,p); sys.Hdp(q,p)] + [zeros(6); sys.G(q)]*u;
+
+% 定义匹配干扰
+t_start_disturbance = 3; % 干扰开始的时间
+disturbance_amplitude = [1000000;2000000;700000;150;0;0]*0.5; % 干扰的幅值
+match_distur = @(t) disturbance_amplitude *sin(t)* (t >= t_start_disturbance);
+dx = @(q,p,u,t) [zeros(6) eye(6); -eye(6) -sys.D(q)]*[sys.Hdq(q,p); sys.Hdp(q,p)] + [zeros(6); sys.G(q)]*u+ [zeros(6); sys.G(q)]*match_distur(t);
 ctrl.T =matlabFunction(manualCholesky(inv(sys.M(q_sym))),'vars',{q_sym});
 
 ctrl.p = @(q,p) ctrl.T(q)'*p;
@@ -98,11 +102,12 @@ ctrl.Hsmc = @(t,q,p) ctrl.KE(t,q,p) + ctrl.U(t,q,p);
 sim.q0 = [0 0 0 0 0 0].';
 sim.p0 = [0 0 0 0 0 0].';
 sim.x0 = [sim.q0; sim.p0];
+options = odeset('OutputFcn', @myOutputFcn,'RelTol',0.2e-2);
 
 % Comcatinate model with control law
-ode = @(t,x) dx(x(1:6),x(7:12),ctrl.u(t,x(1:6),ctrl.p(x(1:6),x(7:12))));
+ode = @(t,x) dx(x(1:6),x(7:12),ctrl.u(t,x(1:6),ctrl.p(x(1:6),x(7:12))),t);
 % Solve ODE
-[res.t,res.x] = ode78(ode,0:sim.delta_t:sim.t_end,sim.x0,odeset('RelTol',1e-3));
+[res.t,res.x] = ode78(ode,0:sim.delta_t:sim.t_end,sim.x0,options);
 %% Plot output
 % Unpack solution vector. Solution is in cannonical coordinates
 res.q = res.x(:,1:6);
@@ -128,11 +133,14 @@ for i=1:length(res.t)
     res.phi(i,:)=phi(res.t(i),res.q(i,:).',res.p(i,:).');
     
     res.u(i,:)  =ctrl.u(res.t(i,:).',res.q(i,:).',ctrl.p(res.q(i,:).',res.p0(i,:).'));
-    
+     res.match_distur(i,:) =match_distur(res.t(i,:).');
 end
-save result  res
+disp("运行结束，打印数据")
+%%保存数据到指定路径
+save('.\Results\Results.mat', 'res');
 % plot energy
-fig1 = figure(1)
+fig1 = figure(1);
+set(fig1, 'Position', [100 100 1000 800]); % 第三个和第四个参数分别是宽度和高度
 subplot(2,1,1)
 plot(res.t,res.H)
 xlabel('time (s)')
@@ -143,49 +151,28 @@ plot(res.t,res.Hsmc)
 grid on
 xlabel('time (s)')
 ylabel('Log of closed-loop energy $H_{smc}$')
-
-% plot configuration
-fig2 = figure(2)
-subplot(3,2,1)
-plot(res.t,res.q(:,1),res.t,res.qd(:,1),'--')
-legend('$q_1$')
-subplot(3,2,2)
-plot(res.t,res.q(:,2),res.t,res.qd(:,2),'--')
-legend('$q_2$')
-subplot(3,2,3)
-plot(res.t,res.q(:,3),res.t,res.qd(:,3),'--')
-legend('$q_3$')
-subplot(3,2,4)
-plot(res.t,res.q(:,4),res.t,res.qd(:,4),'--')
-legend('$q_4$')
-subplot(3,2,5)
-plot(res.t,res.q(:,5),res.t,res.qd(:,5),'--')
-legend('$q_5$')
-subplot(3,2,6)
-plot(res.t,res.q(:,6),res.t,res.qd(:,6),'--')
-% plot(res.t,res.qd(:,1:3),'--')
-legend('$q_6$')
-xlabel('time (s)')
-ylabel('Configuration')
-sgtitle('The responses of q')
-grid on
+saveas(fig1, ['Results/' '1.jpg']);
+posArray=["x","y","z","\phi","\theta","\psi"];
 % 创建六个子图
 fig2 = figure(2);
+set(fig2, 'Position', [100 100 1000 800]); % 第三个和第四个参数分别是宽度和高度
 colors = {'b', 'g', 'r', 'c', 'm', 'y'}; % 不同的颜色
 for i = 1:6
     subplot(3,2,i);
     hold on;
     % 绘制q和qd
     plot(res.t, res.q(:,i), colors{i}); 
-    plot(res.t, res.qd(:,i), '--','Color',[0.9290 0.6940 0.1250]);
+    plot(res.t, res.qd(:,i), '--','Color',[0 0 0]);
     xlabel('Time (s)');
     ylabel('position');
    % 设置图例
-    leg = legend(['$q_{' num2str(i) '}$'], ['$q_{d' num2str(i) '}$'], 'Location', 'best');
+    leg = legend(['${' char(posArray(i)) '}$'], ['${' char(posArray(i)) '}_d$']);
     set(leg, 'Interpreter', 'latex'); % 设置LaTeX解释器
 end
+saveas(fig2, ['Results/' '2.jpg']);
 % 创建六个子图
 fig3 = figure(3);
+set(fig3, 'Position', [100 100 1000 800]); % 第三个和第四个参数分别是宽度和高度
 colors = {'b', 'g', 'r', 'c', 'm', 'y'}; % 不同的颜色
 for i = 1:6
     subplot(3,2,i);
@@ -195,12 +182,14 @@ for i = 1:6
     xlabel('Time (s)');
     ylabel('siliding mode surface');
    % 设置图例
-    leg = legend(['$q_{' num2str(i) '}$'], 'Location', 'best');
+    leg = legend(['${' char(posArray(i)) '}$'], 'Location', 'southeast');
     set(leg, 'Interpreter', 'latex'); % 设置LaTeX解释器
 end
 sgtitle('The responses of siliding mode surface $\sigma$')
+saveas(fig3, ['Results/' '3.jpg']);
 % 创建六个子图
 fig4 = figure(4);
+set(fig4, 'Position', [100 100 1000 800]); % 第三个和第四个参数分别是宽度和高度
 colors = {'b', 'g', 'r', 'c', 'm', 'y'}; % 不同的颜色
 for i = 1:6
     subplot(3,2,i);
@@ -210,12 +199,14 @@ for i = 1:6
     xlabel('Time (s)');
     ylabel('Force (N)');
    % 设置图例
-    leg = legend(['$q_{' num2str(i) '}$'] ,'Location', 'best');
+    leg = legend(['${' char(posArray(i)) '}$'] ,'Location', 'northeast');
     set(leg, 'Interpreter', 'latex'); % 设置LaTeX解释器
 end
 sgtitle('The responses of input $u$')
+saveas(fig4, ['Results/' '4.jpg']);
 % 创建六个子图
 fig5 = figure(5);
+set(fig5, 'Position', [100 100 1000 800]); % 第三个和第四个参数分别是宽度和高度
 colors = {'b', 'g', 'r', 'c', 'm', 'y'}; % 不同的颜色
 for i = 1:6
     subplot(3,2,i);
@@ -223,9 +214,40 @@ for i = 1:6
     
     plot(res.t,res.qe(:,i), colors{i}); 
     xlabel('Time (s)');
-    ylabel('Force (N)');
+    ylabel('error (m)');
    % 设置图例
-    leg = legend(['$q_{' num2str(i) '}$'] ,'Location', 'best');
+    leg = legend(['${' char(posArray(i)) '}$'] ,'Location', 'southeast');
     set(leg, 'Interpreter', 'latex'); % 设置LaTeX解释器
 end
 sgtitle('The responses of input $qe$')
+saveas(fig5, ['Results/' '5.jpg']);
+
+
+fig6=figure(6);
+set(fig6, 'Position', [100 100 1000 800]); % 第三个和第四个参数分别是宽度和高度
+colors = {'b', 'g', 'r', 'c', 'm', 'y'}; % 不同的颜色
+for i = 1:6
+    subplot(3,2,i);
+    hold on;
+    
+    plot(res.t,res.match_distur(:,i), colors{i}); 
+    xlabel('Time (s)');
+    ylabel('Force (N)');
+   % 设置图例
+    leg = legend(['${' char(posArray(i)) '}$'] ,'Location', 'southeast');
+    set(leg, 'Interpreter', 'latex'); % 设置LaTeX解释器
+end
+sgtitle('The responses of disturbances')
+saveas(fig6, ['Results/' '6.jpg']);
+disp("打印数据结束")
+% 输出函数
+function status = myOutputFcn(t, y, flag)
+    if strcmp(flag, 'init')
+        fprintf('Simulation started.\n');
+    elseif strcmp(flag, '')
+        fprintf('At time %.2f \n', t);
+    elseif strcmp(flag, 'done')
+        fprintf('Simulation finished.\n');
+    end
+    status = [];
+end
