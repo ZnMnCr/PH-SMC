@@ -41,9 +41,9 @@ ctrl.D = @(q) sys.D(q);
 ctrl.G = @(q) ctrl.T(q)'*sys.G(q);
 % Define target trajectory and derivatives
 %定义轨迹
-ctrl.qd = @(t) [10*(1/2)*cos(t)+5*(1/2)*sin(2*t); 10*(1/2)*cos(t);10*(1/2)*cos(t)+5*(1/2)*sin(3*t);0;0;0];
-ctrl.dqd = @(t) [-10*(1/2)*sin(t)+10*(1/2)*cos(2*t); -10*(1/2)*sin(t);-10*(1/2)*sin(t)+5*0.5*3*cos(3*t);0;0;0];
-ctrl.ddqd = @(t) [-10*(1/2)*cos(t)-20*(1/2)*sin(2*t); -10*(1/2)*cos(t);-10*(1/2)*cos(t)-5*0.5*3*3*sin(3*t);0;0;0];
+ctrl.qd = @(t) [10*(1/2)*cos(t)+5*(1/2)*sin(2*t); 10*(1/2)*cos(t);10*(1/2)*cos(t)+5*(1/2)*sin(3*t);10*(1/2)*cos(t)+5*(1/2)*sin(2*t); 0;0];
+ctrl.dqd = @(t) [-10*(1/2)*sin(t)+10*(1/2)*cos(2*t); -10*(1/2)*sin(t);-10*(1/2)*sin(t)+5*0.5*3*cos(3*t);-10*(1/2)*sin(t)+10*(1/2)*cos(2*t);0;0];
+ctrl.ddqd = @(t) [-10*(1/2)*cos(t)-20*(1/2)*sin(2*t); -10*(1/2)*cos(t);-10*(1/2)*cos(t)-5*0.5*3*3*sin(3*t);-10*(1/2)*cos(t)-20*(1/2)*sin(2*t);0;0];
 % Compute the target momentum from (13)
 %期望动量的坐标变换
 ctrl.pd = @(t,q) ctrl.T(q)\ctrl.dqd(t);
@@ -95,7 +95,7 @@ ctrl.Hsmc = @(t,q,p) ctrl.KE(t,q,p) + ctrl.U(t,q,p);
 sim.q0 = [0 0 0 0 0 0].';
 sim.p0 = [0 0 0 0 0 0].';
 sim.x0 = [sim.q0; sim.p0];
-options = odeset('OutputFcn', @myOutputFcn,'RelTol',0.3e-1);
+options = odeset('OutputFcn', @myOutputFcn,'RelTol',0.5e-2);
 
 % Comcatinate model with control law
 ode = @(t,x) dx(x(1:6),x(7:12),ctrl.u(t,x(1:6),ctrl.p(x(1:6),x(7:12))),t);
