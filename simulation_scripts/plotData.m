@@ -171,9 +171,9 @@ z_ideal = xyz_ideal(:, 3);
 % end
 
 % 绘制三维轨迹
-plot3(x_actual, y_actual, z_actual, 'b-');
+plot3(x_actual, y_actual, z_actual, 'r');
 hold on;
-plot3(x_ideal, y_ideal, z_ideal, 'g--');
+plot3(x_ideal, y_ideal, z_ideal,'--','Color',[0 0 0]);
 grid on;
 xlabel('X');
 ylabel('Y');
@@ -182,5 +182,5 @@ view(3)
 % 绘制姿态箭头
 % quiver3(x_actual, y_actual, z_actual, u_actual, v_actual, w_actual, 'r');
 % quiver3(x_ideal, y_ideal, z_ideal, u_ideal, v_ideal, w_ideal, 'k');
-legend("实际轨迹", "理想轨迹");
+legend("q", "$q_d$");
 hold off;
