@@ -31,7 +31,7 @@ sys.dVdq = matlabFunction(jacobian(sum(sys.V(q_sym)),q_sym).','vars',{q_sym});
 
 % 定义匹配干扰
 t_start_disturbance = 3; % 干扰开始的时间
-disturbance_amplitude = [1000000;2000000;700000;1000000;0;0]; % 干扰的幅值
+disturbance_amplitude = [1000000;2000000;700000;1000000;0;0]*0.1; % 干扰的幅值
 match_distur = @(t) disturbance_amplitude *sin(t)* (t >= t_start_disturbance);
 dx = @(q,p,u,t) [zeros(6) eye(6); -eye(6) -sys.D(q)]*[sys.Hdq(q,p); sys.Hdp(q,p)] + [zeros(6); sys.G(q)]*u+ [zeros(6); sys.G(q)]*match_distur(t);
 ctrl.T =matlabFunction(manualCholesky(inv(sys.M(q_sym))),'vars',{q_sym});
@@ -59,7 +59,7 @@ ctrl.dpddq = matlabFunction(jacobian(ctrl.pd(t_sym,q_sym),q_sym),'vars',[{t_sym}
 %% Define Passivity-based sliding mode controller
 %VI. NUMERICAL EXAMPLE Case1 and K
  %K=tril(ones(6));
- K=diag([1000;1500;1000;1000;1000;1000]);
+ K=diag([300;500;300;300;300;300]);
 
  phi=@(t,q,p) (K*ctrl.eq(t,q)+ctrl.ep(t,q,p));%Here q is a variable to be determined
 %phi=@(q,p) K*q+tan(p);
@@ -69,7 +69,7 @@ dphidep=matlabFunction(jacobian(phi(t_sym,q_sym,p_sym),p_sym),'vars',{p_sym});
 %Replace the variable to be determined q with eq(\tilde \q)
 
 %compute the Lambda from eq.(22)
-he=sym(1000*0.5*(dphideq(q_sym)*ctrl.T(q_sym))*dphidep(p_sym)');%这里的系数对系统收敛到滑模面上有影响
+he=sym(500*0.5*(dphideq(q_sym)*ctrl.T(q_sym))*dphidep(p_sym)');%这里的系数对系统收敛到滑模面上有影响
 %he=100000*0.5*(dphidq(q_sym)*ctrl.T(q_sym))*dphidep(t_sym,q_sym,p_sym)';
 Lambda=matlabFunction(2*(he+he'),'vars',[{p_sym}]);
 %
@@ -95,12 +95,14 @@ ctrl.Hsmc = @(t,q,p) ctrl.KE(t,q,p) + ctrl.U(t,q,p);
 sim.q0 = [0 0 0 0 0 0].';
 sim.p0 = [0 0 0 0 0 0].';
 sim.x0 = [sim.q0; sim.p0];
-options = odeset('OutputFcn', @myOutputFcn,'RelTol',0.5e-2);
+options = odeset('OutputFcn', @myOutputFcn,'RelTol',0.1e-2);
 
 % Comcatinate model with control law
 ode = @(t,x) dx(x(1:6),x(7:12),ctrl.u(t,x(1:6),ctrl.p(x(1:6),x(7:12))),t);
 % Solve ODE
+tic
 [res.t,res.x] = ode78(ode,0:sim.delta_t:sim.t_end,sim.x0,options);
+toc
 %% Plot output
 % Unpack solution vector. Solution is in cannonical coordinates
 res.q = res.x(:,1:6);
@@ -130,6 +132,7 @@ for i=1:length(res.t)
 end
 disp("运行结束，打印数据")
 %保存数据到指定路径
-save('.\Results\Results.mat', 'res');
+save('Results/Results.mat', 'res');%ubuntu
+%save('Results\Results.mat', 'res');%windows 
 plotData(res);%出图
 disp("打印数据结束")
