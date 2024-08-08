@@ -20,7 +20,7 @@ subplot(2,1,2)
 plot(res.t,res.Hsmc)
 grid on
 xlabel('time (s)')
-ylabel('Log of closed-loop energy $H_{smc}$')
+ylabel('Closed-loop energy $H_{smc}$')
 saveas(fig1, ['Results/' '1.jpg']);
 posArray=["x","y","z","\phi","\theta","\psi"];
 % 创建六个子图
