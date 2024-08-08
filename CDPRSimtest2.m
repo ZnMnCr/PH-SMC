@@ -31,7 +31,11 @@ sys.dVdq = matlabFunction(jacobian(sum(sys.V(q_sym)),q_sym).','vars',{q_sym});
 
 % 定义匹配干扰
 t_start_disturbance = 3; % 干扰开始的时间
+<<<<<<< HEAD
 disturbance_amplitude = [1000000;2000000;700000;0;0;0]*0.1; % 干扰的幅值
+=======
+disturbance_amplitude = [1000000;2000000;700000;1000000;0;0]*0.1; % 干扰的幅值
+>>>>>>> 28f053ca50aa267c4e699b746f11e78666cdd703
 match_distur = @(t) disturbance_amplitude *sin(t)* (t >= t_start_disturbance);
 dx = @(q,p,u,t) [zeros(6) eye(6); -eye(6) -sys.D(q)]*[sys.Hdq(q,p); sys.Hdp(q,p)] + [zeros(6); sys.G(q)]*u+ [zeros(6); sys.G(q)]*match_distur(t);
 ctrl.T =matlabFunction(manualCholesky(inv(sys.M(q_sym))),'vars',{q_sym});
@@ -41,9 +45,9 @@ ctrl.D = @(q) sys.D(q);
 ctrl.G = @(q) ctrl.T(q)'*sys.G(q);
 % Define target trajectory and derivatives
 %定义轨迹
-ctrl.qd = @(t) [10*(1/2)*cos(t)+5*(1/2)*sin(2*t); 10*(1/2)*cos(t);10*(1/2)*cos(t)+5*(1/2)*sin(3*t);0;0;0];
-ctrl.dqd = @(t) [-10*(1/2)*sin(t)+10*(1/2)*cos(2*t); -10*(1/2)*sin(t);-10*(1/2)*sin(t)+5*0.5*3*cos(3*t);0;0;0];
-ctrl.ddqd = @(t) [-10*(1/2)*cos(t)-20*(1/2)*sin(2*t); -10*(1/2)*cos(t);-10*(1/2)*cos(t)-5*0.5*3*3*sin(3*t);0;0;0];
+ctrl.qd = @(t) [10*(1/2)*cos(t)+5*(1/2)*sin(2*t); 10*(1/2)*cos(t);10*(1/2)*cos(t)+5*(1/2)*sin(3*t);10*(1/2)*cos(t)+5*(1/2)*sin(2*t); 0;0];
+ctrl.dqd = @(t) [-10*(1/2)*sin(t)+10*(1/2)*cos(2*t); -10*(1/2)*sin(t);-10*(1/2)*sin(t)+5*0.5*3*cos(3*t);-10*(1/2)*sin(t)+10*(1/2)*cos(2*t);0;0];
+ctrl.ddqd = @(t) [-10*(1/2)*cos(t)-20*(1/2)*sin(2*t); -10*(1/2)*cos(t);-10*(1/2)*cos(t)-5*0.5*3*3*sin(3*t);-10*(1/2)*cos(t)-20*(1/2)*sin(2*t);0;0];
 % Compute the target momentum from (13)
 %期望动量的坐标变换
 ctrl.pd = @(t,q) ctrl.T(q)\ctrl.dqd(t);
@@ -59,7 +63,11 @@ ctrl.dpddq = matlabFunction(jacobian(ctrl.pd(t_sym,q_sym),q_sym),'vars',[{t_sym}
 %% Define Passivity-based sliding mode controller
 %VI. NUMERICAL EXAMPLE Case1 and K
  %K=tril(ones(6));
+<<<<<<< HEAD
  K=diag([500;1000;500;500;500;500]);
+=======
+ K=diag([300;500;300;300;300;300]);
+>>>>>>> 28f053ca50aa267c4e699b746f11e78666cdd703
 
  phi=@(t,q,p) (K*ctrl.eq(t,q)+ctrl.ep(t,q,p));%Here q is a variable to be determined
 %phi=@(q,p) K*q+tan(p);
@@ -95,14 +103,20 @@ ctrl.Hsmc = @(t,q,p) ctrl.KE(t,q,p) + ctrl.U(t,q,p);
 sim.q0 = [0 0 0 0 0 0].';
 sim.p0 = [0 0 0 0 0 0].';
 sim.x0 = [sim.q0; sim.p0];
+<<<<<<< HEAD
 options = odeset('OutputFcn', @myOutputFcn,'RelTol',1e-3);
+=======
+options = odeset('OutputFcn', @myOutputFcn,'RelTol',0.1e-2);
+>>>>>>> 28f053ca50aa267c4e699b746f11e78666cdd703
 
 % Comcatinate model with control law
 tic
 ode = @(t,x) dx(x(1:6),x(7:12),ctrl.u(t,x(1:6),ctrl.p(x(1:6),x(7:12))),t);
 toc
 % Solve ODE
+tic
 [res.t,res.x] = ode78(ode,0:sim.delta_t:sim.t_end,sim.x0,options);
+toc
 %% Plot output
 % Unpack solution vector. Solution is in cannonical coordinates
 res.q = res.x(:,1:6);
@@ -132,6 +146,7 @@ for i=1:length(res.t)
 end
 disp("运行结束，打印数据")
 %保存数据到指定路径
-save('.\Results\Results.mat', 'res');
+save('Results/Results.mat', 'res');%ubuntu
+%save('Results\Results.mat', 'res');%windows 
 plotData(res);%出图
 disp("打印数据结束")
