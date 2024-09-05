@@ -9,7 +9,7 @@ addpath('./simulation_scripts');
 % Simulation step 仿真步长
 sim.delta_t = 0.01;
 % Simulation length仿真时长
-sim.t_end = 2;
+sim.t_end = 20;
 
 
 syms q1 q2 q3 q4 q5 q6 p1 p2 p3 p4 p5 p6 t_sym
