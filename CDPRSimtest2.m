@@ -9,7 +9,7 @@ addpath('./simulation_scripts');
 % Simulation step 仿真步长
 sim.delta_t = 0.01;
 % Simulation length仿真时长
-sim.t_end = 20;
+sim.t_end = 10;
 
 
 syms q1 q2 q3 q4 q5 q6 p1 p2 p3 p4 p5 p6 t_sym
@@ -22,7 +22,7 @@ pa.g=[0;0;9.8];%重力加速度
 [sys]=DefineCDPR_Plant(pa.m,pa.g);
 
 %% PB-SMC控制算法设计
-[ctrl]=Controller(sys);
+[ctrl]=JoelController(sys);
 
 %% Run simulation
 % Define initial conditions
