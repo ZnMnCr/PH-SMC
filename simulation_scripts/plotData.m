@@ -39,24 +39,46 @@ for i = 1:6
     leg = legend(['${' char(posArray(i)) '}$'], ['${' char(posArray(i)) '}_d$']);
     set(leg, 'Interpreter', 'latex'); % 设置LaTeX解释器
 end
+
 saveas(fig2, ['Results/' '2.jpg']);
-% 创建六个子图
+% 创建一个新的图形窗口
 fig3 = figure(3);
-set(fig3, 'Position', [100 100 1000 800]); % 第三个和第四个参数分别是宽度和高度
+set(fig3, 'Position', [100 100 1000 800]); % 设置图形窗口的位置和大小
+
+% 定义颜色序列
 colors = {'b', 'g', 'r', 'c', 'm', 'y'}; % 不同的颜色
+
+% 假设 res.t 和 res.phi 已经定义好
+% res.t 是时间向量
+% res.phi 是一个矩阵，其中每一列对应一个信号
+
+% 清除当前图形
+clf;
+
+% 绘制每一条曲线
 for i = 1:6
-    subplot(3,2,i);
-    hold on;
-    
-    plot(res.t,res.phi(:,i), colors{i}); 
-    xlabel('Time (s)');
-    ylabel('siliding mode surface');
-   % 设置图例
-    leg = legend(['${' char(posArray(i)) '}$'], 'Location', 'southeast');
-    set(leg, 'Interpreter', 'latex'); % 设置LaTeX解释器
+    plot(res.t, res.phi(:,i), colors{i}); % 使用指定的颜色绘制曲线
+    hold on; % 允许在同一图上绘制多条线
 end
-sgtitle('The responses of siliding mode surface $\sigma$')
+
+% 设置图表属性
+xlabel('Time (s)');
+ylabel('Sliding mode surface');
+title('The responses of sliding mode surface $\sigma$');
+
+% 设置图例
+legends = cell(1, 6);
+for i = 1:6
+    legends{i} = ['$' char(posArray(i)) '$']; % 假设 posArray 已经定义好
+end
+leg = legend(legends, 'Location', 'best');
+set(leg, 'Interpreter', 'latex'); % 设置LaTeX解释器
+zp = BaseZoom();
+zp.run;
+ zp.run;
+% 保存图形
 saveas(fig3, ['Results/' '3.jpg']);
+
 % 创建六个子图
 fig4 = figure(4);
 set(fig4, 'Position', [100 100 1000 800]); % 第三个和第四个参数分别是宽度和高度
@@ -85,10 +107,15 @@ for i = 1:6
     plot(res.t,res.qe(:,i), colors{i}); 
     xlabel('Time (s)');
     ylabel('error (m)');
+    if i == 1
+    zp = BaseZoom();
+     zp.run;
+    end
    % 设置图例
     leg = legend(['${' char(posArray(i)) '}$'] ,'Location', 'southeast');
     set(leg, 'Interpreter', 'latex'); % 设置LaTeX解释器
 end
+
 sgtitle('The responses of input $qe$')
 saveas(fig5, ['Results/' '5.jpg']);
 
@@ -115,11 +142,11 @@ fig7=figure(7);
 % 假设 res.q 和 res.qd 是 Nx6 的数组
 % 实际轨迹和姿态数据
 xyz_actual = res.q(:, 1:3);
-eulerAngles_actual = res.q(:, 4:6);
+
 
 % 理想轨迹和姿态数据
 xyz_ideal = res.qd(:, 1:3);
-eulerAngles_ideal = res.qd(:, 4:6);
+
 
 % 提取 x, y, z 坐标
 x_actual = xyz_actual(:, 1);
@@ -130,45 +157,8 @@ x_ideal = xyz_ideal(:, 1);
 y_ideal = xyz_ideal(:, 2);
 z_ideal = xyz_ideal(:, 3);
 
-% % 定义箭头的长度
-% arrowLength = 0.1;
-% 
-% % 预分配方向矢量数组
-% u_actual = zeros(size(x_actual));
-% v_actual = zeros(size(y_actual));
-% w_actual = zeros(size(z_actual));
-% 
-% u_ideal = zeros(size(x_ideal));
-% v_ideal = zeros(size(y_ideal));
-% w_ideal = zeros(size(z_ideal));
-% 
-% % 计算实际轨迹的方向矢量
-% for i = 1:length(x_actual)
-%     % 获取当前点的欧拉角
-%     roll = eulerAngles_actual(i, 1);
-%     pitch = eulerAngles_actual(i, 2);
-%     yaw = eulerAngles_actual(i, 3);
-% 
-%     % 将欧拉角转换为方向矢量
-%     direction = eul2rotm([yaw, pitch, roll]) * [1; 0; 0]; % 假设 x 轴是前进方向
-%     u_actual(i) = direction(1) * arrowLength;
-%     v_actual(i) = direction(2) * arrowLength;
-%     w_actual(i) = direction(3) * arrowLength;
-% end
-% 
-% % 计算理想轨迹的方向矢量
-% for i = 1:length(x_ideal)
-%     % 获取当前点的欧拉角
-%     roll = eulerAngles_ideal(i, 1);
-%     pitch = eulerAngles_ideal(i, 2);
-%     yaw = eulerAngles_ideal(i, 3);
-% 
-%     % 将欧拉角转换为方向矢量
-%     direction = eul2rotm([yaw, pitch, roll]) * [1; 0; 0]; % 假设 x 轴是前进方向
-%     u_ideal(i) = direction(1) * arrowLength;
-%     v_ideal(i) = direction(2) * arrowLength;
-%     w_ideal(i) = direction(3) * arrowLength;
-% end
+
+
 
 % 绘制三维轨迹
 plot3(x_actual, y_actual, z_actual, 'r');
@@ -179,8 +169,6 @@ xlabel('X');
 ylabel('Y');
 zlabel('Z');
 view(3)
-% 绘制姿态箭头
-% quiver3(x_actual, y_actual, z_actual, u_actual, v_actual, w_actual, 'r');
-% quiver3(x_ideal, y_ideal, z_ideal, u_ideal, v_ideal, w_ideal, 'k');
+
 legend("q", "$q_d$");
 hold off;
