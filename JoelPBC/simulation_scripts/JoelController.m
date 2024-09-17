@@ -1,13 +1,13 @@
-function [ctrl]=Controller(sys)
+function [ctrl]=JoelController(sys)
 syms q1 q2 q3 q4 q5 q6 p1 p2 p3 p4 p5 p6 t_sym
 q_sym = [q1 q2 q3 q4 q5 q6].';
 p_sym = [p1 p2 p3 p4 p5 p6].';
 
 % Define target trajectory and derivatives
 %定义轨迹
-ctrl.qd = @(t) [10*(1/2)*cos(t)+5*(1/2)*sin(2*t); 10*(1/2)*cos(t);10*(1/2)*cos(t)+5*(1/2)*sin(3*t);10*(1/2)*cos(t)+5*(1/2)*sin(2*t); 0;0];
-ctrl.dqd = @(t) [-10*(1/2)*sin(t)+10*(1/2)*cos(2*t); -10*(1/2)*sin(t);-10*(1/2)*sin(t)+5*0.5*3*cos(3*t);-10*(1/2)*sin(t)+10*(1/2)*cos(2*t);0;0];
-ctrl.ddqd = @(t) [-10*(1/2)*cos(t)-20*(1/2)*sin(2*t); -10*(1/2)*cos(t);-10*(1/2)*cos(t)-5*0.5*3*3*sin(3*t);-10*(1/2)*cos(t)-20*(1/2)*sin(2*t);0;0];
+ctrl.qd = @(t) [-10*(1/2)*cos(t)+5*(1/2)*sin(2*t); 10*(1/2)*cos(t);10*(1/2)*cos(t)+5*(1/2)*sin(3*t);10*(1/2)*cos(t)+5*(1/2)*sin(2*t); -10*(1/2)*cos(t)+5*(1/2)*sin(2*t);10*(1/2)*cos(t)+5*(1/2)*sin(2*t);];
+ctrl.dqd = @(t) [10*(1/2)*sin(t)+10*(1/2)*cos(2*t); -10*(1/2)*sin(t);-10*(1/2)*sin(t)+5*0.5*3*cos(3*t);-10*(1/2)*sin(t)+10*(1/2)*cos(2*t);10*(1/2)*sin(t)+10*(1/2)*cos(2*t);-10*(1/2)*sin(t)+10*(1/2)*cos(2*t)];
+ctrl.ddqd = @(t) [10*(1/2)*cos(t)-20*(1/2)*sin(2*t); -10*(1/2)*cos(t);-10*(1/2)*cos(t)-5*0.5*3*3*sin(3*t);-10*(1/2)*cos(t)-20*(1/2)*sin(2*t);10*(1/2)*cos(t)-20*(1/2)*sin(2*t);-10*(1/2)*cos(t)-20*(1/2)*sin(2*t)];
 % controller child-function
 %% Control law
 % Compute the matrix T^{-1}(q) using the solution from https://en.wikipedia.org/wiki/Square_root_of_a_2_by_2_matrix
@@ -36,12 +36,12 @@ ctrl.eq = @(t,q) q - ctrl.qd(t);
 ctrl.dpddq = matlabFunction(jacobian(ctrl.pd(t_sym,q_sym),q_sym),'vars',[{t_sym}, {q_sym}]);
 
 % Select damping injection terms
-ctrl.alpha = 10;
-ctrl.Kd = 10*eye(6);
+ctrl.alpha = 0.1;
+ctrl.Kd = 20*eye(6);
 K= 500*eye(6);
 % Define kinetic-potential energy shaping tracking control closed-loop
 % energy as per (27)
-ctrl.Kp = 10*eye(6);
+ctrl.Kp = 100*eye(6);
 ctrl.KE = @(t,q,p) 0.5*ctrl.ep(t,q,p).'*ctrl.ep(t,q,p);
 ctrl.Vd = @(t,q,p) 0.5*(ctrl.eq(t,q) + ctrl.alpha*ctrl.ep(t,q,p)).'*ctrl.Kp*(ctrl.eq(t,q) + ctrl.alpha*ctrl.ep(t,q,p));
 ctrl.Hd = @(t,q,p) ctrl.KE(t,q,p) + ctrl.Vd(t,q,p);

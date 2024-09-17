@@ -9,7 +9,7 @@ addpath('./simulation_scripts');
 % Simulation step 仿真步长
 sim.delta_t = 0.01;
 % Simulation length仿真时长
-sim.t_end = 10;
+sim.t_end = 7;
 
 
 syms q1 q2 q3 q4 q5 q6 p1 p2 p3 p4 p5 p6 t_sym
@@ -30,7 +30,7 @@ sim.q0 = [0 0 0 0 0 0].';
 sim.p0 = [0 0 0 0 0 0].';
 sim.x0 = [sim.q0; sim.p0];
 
-options = odeset('OutputFcn', @myOutputFcn,'RelTol',0.1e-2);
+options = odeset('OutputFcn', @myOutputFcn,'RelTol',1e-3);
 
 
 % Comcatinate model with control law

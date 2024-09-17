@@ -16,7 +16,6 @@ sys.Hdp =  matlabFunction(jacobian(sys.H(q_sym,p_sym),p_sym).','vars',[{q_sym}, 
 sys.dVdq = matlabFunction(jacobian(sum(sys.V(q_sym)),q_sym).','vars',{q_sym});
 
 % 定义匹配干扰
-t_start_disturbance = 3; % 干扰开始的时间
-disturbance_amplitude = [1000000;2000000;700000;1000000;0;0]*0.1; % 干扰的幅值
-sys.match_distur = @(t) disturbance_amplitude *sin(t)* (t >= t_start_disturbance);
+
+[sys]=DefineDisturbance(sys);
 sys.dx = @(q,p,u,t) [zeros(6) eye(6); -eye(6) -sys.D(q)]*[sys.Hdq(q,p); sys.Hdp(q,p)] + [zeros(6); sys.G(q)]*u+ [zeros(6); sys.G(q)]*sys.match_distur(t);

@@ -1,4 +1,4 @@
-function [ctrl]=Controller(sys)
+function [ctrl]=sakataController(sys,ctrl)
 syms q1 q2 q3 q4 q5 q6 p1 p2 p3 p4 p5 p6 t_sym
 q_sym = [q1 q2 q3 q4 q5 q6].';
 p_sym = [p1 p2 p3 p4 p5 p6].';
@@ -9,10 +9,6 @@ ctrl.p = @(q,p) ctrl.T(q)'*p;
 ctrl.D = @(q) sys.D(q);
 ctrl.G = @(q) ctrl.T(q)'*sys.G(q);
 % Define target trajectory and derivatives
-%定义轨迹
-ctrl.qd = @(t) [10*(1/2)*cos(t)+5*(1/2)*sin(2*t); 10*(1/2)*cos(t);10*(1/2)*cos(t)+5*(1/2)*sin(3*t);10*(1/2)*cos(t)+5*(1/2)*sin(2*t); 0;0];
-ctrl.dqd = @(t) [-10*(1/2)*sin(t)+10*(1/2)*cos(2*t); -10*(1/2)*sin(t);-10*(1/2)*sin(t)+5*0.5*3*cos(3*t);-10*(1/2)*sin(t)+10*(1/2)*cos(2*t);0;0];
-ctrl.ddqd = @(t) [-10*(1/2)*cos(t)-20*(1/2)*sin(2*t); -10*(1/2)*cos(t);-10*(1/2)*cos(t)-5*0.5*3*3*sin(3*t);-10*(1/2)*cos(t)-20*(1/2)*sin(2*t);0;0];
 % Compute the target momentum from (13)
 %期望动量的坐标变换
 ctrl.pd = @(t,q) ctrl.T(q)\ctrl.dqd(t);
@@ -57,4 +53,4 @@ ctrl.u = @(t,q,p) ctrl.G(q)\(ctrl.D(q)*ctrl.pd(t,q) + ctrl.dpddq(t,q)*(ctrl.T(q)
 % Define  closed-loop energy in eq.(24)
 ctrl.KE = @(t,q,p) 0.5*sum(ctrl.ep(t,q,p).^2);%kinetic energy
 ctrl.U=matlabFunction((sqrt(sum(normPhi.^2))),'vars',[{t_sym},{q_sym},{p_sym}]);%potential energy
-ctrl.Hsmc = @(t,q,p) ctrl.KE(t,q,p) + ctrl.U(t,q,p);
+ctrl.Hd = @(t,q,p) ctrl.KE(t,q,p) + ctrl.U(t,q,p);

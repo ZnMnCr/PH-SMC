@@ -1,4 +1,4 @@
-function []=plotData(res)
+function []=plotData(res,ctrl)
 % Set Figure default values
 set(0,'DefaultTextInterpreter','latex');
 set(0,'DefaultLegendInterpreter','latex');
@@ -17,7 +17,7 @@ xlabel('time (s)')
 ylabel('Open-loop energy')
 subplot(2,1,2)
 
-plot(res.t,res.Hsmc)
+plot(res.t,res.Hd)
 grid on
 xlabel('time (s)')
 ylabel('Closed-loop energy $H_{smc}$')
@@ -42,17 +42,13 @@ end
 
 saveas(fig2, ['Results/' '2.jpg']);
 % 创建一个新的图形窗口
+if ctrl.selector == 1
 fig3 = figure(3);
 set(fig3, 'Position', [100 100 1000 800]); % 设置图形窗口的位置和大小
 
 % 定义颜色序列
 colors = {'b', 'g', 'r', 'c', 'm', 'y'}; % 不同的颜色
 
-% 假设 res.t 和 res.phi 已经定义好
-% res.t 是时间向量
-% res.phi 是一个矩阵，其中每一列对应一个信号
-
-% 清除当前图形
 clf;
 
 % 绘制每一条曲线
@@ -73,12 +69,12 @@ for i = 1:6
 end
 leg = legend(legends, 'Location', 'best');
 set(leg, 'Interpreter', 'latex'); % 设置LaTeX解释器
-zp = BaseZoom();
-zp.run;
- zp.run;
+% zp = BaseZoom();
+% zp.run;
+%  zp.run;
 % 保存图形
 saveas(fig3, ['Results/' '3.jpg']);
-
+ end
 % 创建六个子图
 fig4 = figure(4);
 set(fig4, 'Position', [100 100 1000 800]); % 第三个和第四个参数分别是宽度和高度
@@ -107,10 +103,10 @@ for i = 1:6
     plot(res.t,res.qe(:,i), colors{i}); 
     xlabel('Time (s)');
     ylabel('error (m)');
-    if i == 1
-    zp = BaseZoom();
-     zp.run;
-    end
+    % if i == 1
+    % zp = BaseZoom();
+    %  zp.run;
+    % end
    % 设置图例
     leg = legend(['${' char(posArray(i)) '}$'] ,'Location', 'southeast');
     set(leg, 'Interpreter', 'latex'); % 设置LaTeX解释器

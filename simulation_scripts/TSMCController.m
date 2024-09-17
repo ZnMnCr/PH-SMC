@@ -1,4 +1,4 @@
-function [ctrl]=Controller(sys)
+function [ctrl]=TSMCController(sys,ctrl)
 syms q1 q2 q3 q4 q5 q6 p1 p2 p3 p4 p5 p6 t_sym
 q_sym = [q1 q2 q3 q4 q5 q6].';
 p_sym = [p1 p2 p3 p4 p5 p6].';
@@ -10,14 +10,14 @@ ctrl.D = @(q) sys.D(q);
 ctrl.G = @(q) ctrl.T(q)'*sys.G(q);
 % Define target trajectory and derivatives
 %定义轨迹
-ctrl.qd = @(t) [10*(1/2)*cos(t)+5*(1/2)*sin(2*t); 10*(1/2)*cos(t);10*(1/2)*cos(t)+5*(1/2)*sin(3*t);10*(1/2)*cos(t)+5*(1/2)*sin(2*t); 0;0];
-ctrl.dqd = @(t) [-10*(1/2)*sin(t)+10*(1/2)*cos(2*t); -10*(1/2)*sin(t);-10*(1/2)*sin(t)+5*0.5*3*cos(3*t);-10*(1/2)*sin(t)+10*(1/2)*cos(2*t);0;0];
-ctrl.ddqd = @(t) [-10*(1/2)*cos(t)-20*(1/2)*sin(2*t); -10*(1/2)*cos(t);-10*(1/2)*cos(t)-5*0.5*3*3*sin(3*t);-10*(1/2)*cos(t)-20*(1/2)*sin(2*t);0;0];
+ctrl.qd = @(t) [-10*(1/2)*cos(t)+5*(1/2)*sin(2*t); 10*(1/2)*cos(t);10*(1/2)*cos(t)+5*(1/2)*sin(3*t);10*(1/2)*cos(t)+5*(1/2)*sin(2*t); -10*(1/2)*cos(t)+5*(1/2)*sin(2*t);10*(1/2)*cos(t)+5*(1/2)*sin(2*t);];
+ctrl.dqd = @(t) [10*(1/2)*sin(t)+10*(1/2)*cos(2*t); -10*(1/2)*sin(t);-10*(1/2)*sin(t)+5*0.5*3*cos(3*t);-10*(1/2)*sin(t)+10*(1/2)*cos(2*t);10*(1/2)*sin(t)+10*(1/2)*cos(2*t);-10*(1/2)*sin(t)+10*(1/2)*cos(2*t)];
+ctrl.ddqd = @(t) [10*(1/2)*cos(t)-20*(1/2)*sin(2*t); -10*(1/2)*cos(t);-10*(1/2)*cos(t)-5*0.5*3*3*sin(3*t);-10*(1/2)*cos(t)-20*(1/2)*sin(2*t);10*(1/2)*cos(t)-20*(1/2)*sin(2*t);-10*(1/2)*cos(t)-20*(1/2)*sin(2*t)];
 % Compute the target momentum from (13)
 %期望动量的坐标变换
 ctrl.pd = @(t,q) ctrl.T(q)\ctrl.dqd(t);
 
-% Compute the error coordinates on q, p from (11), (15)
+% Compute the error coordinates on q, p from (11), (15) 
 %速度和动量误差
 ctrl.ep = @(t,q,p) p - ctrl.pd(t,q);
 ctrl.eq = @(t,q) q - ctrl.qd(t);
@@ -27,13 +27,14 @@ ctrl.eq = @(t,q) q - ctrl.qd(t);
 ctrl.dpddq = matlabFunction(jacobian(ctrl.pd(t_sym,q_sym),q_sym),'vars',[{t_sym}, {q_sym}]);
 %% Define Passivity-based sliding mode controller
 %VI. NUMERICAL EXAMPLE Case1 and K
- %K=tril(ones(6));
+%K=tril(ones(6));
 beta = 1;
 gamma = 3;
 delta = 1;
-alpha = diag([500;500;500;500;500;500]);
+alpha =  diag([500;500;500;500;500;500]);
+eposlion=10;
 % ctrl.phi=@(t,q,p) (K*ctrl.eq(t,q)+ctrl.ep(t,q,p));%Here q is a variable to be determined
-ctrl.phi = @(t,q,p) ctrl.ep(t,q,p) + alpha*ctrl.eq(t,q) +beta.*ctrl.eq(t,q).^(gamma/delta);
+ctrl.phi = @(t,q,p) ctrl.ep(t,q,p) + alpha*ctrl.eq(t,q) + beta.*ctrl.eq(t,q).^(gamma/delta);
  %phi=@(q,p) K*q+tan(p);
 %Take a partial derivative of \phi
 dphideq = matlabFunction(jacobian(ctrl.phi(t_sym,q_sym,p_sym),q_sym),'vars',{q_sym,t_sym});

@@ -20,10 +20,16 @@ p_sym = [p1 p2 p3 p4 p5 p6].';
 pa.m=6000;%动平台质量
 pa.g=[0;0;9.8];%重力加速度
 [sys]=DefineCDPR_Plant(pa.m,pa.g);
-
+[ctrl]=DefineTraj();
+ctrl.selector = 1;
 %% PB-SMC控制算法设计
-[ctrl]=JoelController(sys);
-
+if ctrl.selector  == 1
+    [ctrl]=TSMCController(sys,ctrl);
+elseif ctrl.selector  == 2
+   [ctrl]=sakataController(sys,ctrl);
+elseif ctrl.selector  == 3
+    [ctrl]=JoelController(sys,ctrl);
+end
 %% Run simulation
 % Define initial conditions
 sim.q0 = [0 0 0 0 0 0].';
@@ -50,7 +56,16 @@ res.p0 = res.x(:,7:12);
 
 disp("运行结束，打印数据")
 %保存数据到指定路径
-save('Results/Results.mat', 'res');%ubuntu
+if ctrl.selector == 1
+    TSMC = res;
+    save('Results/TSMC.mat', 'TSMC');%ubuntu
+elseif ctrl.selector == 2
+    sakata =res;
+    save('Results/sakata.mat', 'sakata');
+else
+    Joel = res;
+    save('Results/Joel.mat', 'Joel');
+end
 %save('Results\Results.mat', 'res');%windows 
-plotData(res);%出图
+plotData(res,ctrl);%出图
 disp("打印数据结束")

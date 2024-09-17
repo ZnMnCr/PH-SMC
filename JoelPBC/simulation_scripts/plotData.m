@@ -69,6 +69,10 @@ for i = 1:6
     plot(res.t,res.qe(:,i), colors{i}); 
     xlabel('Time (s)');
     ylabel('error (m)');
+    %     if i == 1
+    % zp = BaseZoom();
+    %  zp.run;
+    % end
    % 设置图例
     leg = legend(['${' char(posArray(i)) '}$'] ,'Location', 'southeast');
     set(leg, 'Interpreter', 'latex'); % 设置LaTeX解释器

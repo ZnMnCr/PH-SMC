@@ -14,7 +14,10 @@ for i=1:length(res.t)
     res.pd(i,:) =ctrl.pd(res.t(i),ctrl.qd(res.t(i))).';
     res.qe(i,:) = res.q(i,:) - res.qd(i,:);
     res.pe(i,:) = ctrl.ep(res.t(i),res.q(i,:).',res.p(i,:).');
-    
+    if ctrl.selector == 1
+        res.phi(i,:)=ctrl.phi(res.t(i),res.q(i,:).',res.p(i,:).');
+    end
+
     res.u(i,:)  =ctrl.u(res.t(i,:).',res.q(i,:).',ctrl.p(res.q(i,:).',res.p0(i,:).'));
      res.match_distur(i,:) =sys.match_distur(res.t(i,:).');
      
