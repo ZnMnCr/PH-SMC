@@ -33,12 +33,12 @@ ctrl.eq = @(t,q) q - ctrl.qd(t);
 ctrl.dpddq = matlabFunction(jacobian(ctrl.pd(t_sym,q_sym),q_sym),'vars',[{t_sym}, {q_sym}]);
 
 % Select damping injection terms
-ctrl.alpha = 1;
-ctrl.Kd = 100*eye(6);
-K= 500*eye(6);
+ctrl.alpha = 0;
+ctrl.Kd = 10*eye(6);
+K= 10000*eye(6);
 % Define kinetic-potential energy shaping tracking control closed-loop
 % energy as per (27)
-ctrl.Kp = 100*eye(6);
+ctrl.Kp = 10*eye(6);
 ctrl.KE = @(t,q,p) 0.5*ctrl.ep(t,q,p).'*ctrl.ep(t,q,p);
 ctrl.Vd = @(t,q,p) 0.5*(ctrl.eq(t,q) + ctrl.alpha*ctrl.ep(t,q,p)).'*ctrl.Kp*(ctrl.eq(t,q) + ctrl.alpha*ctrl.ep(t,q,p));
 ctrl.Hd = @(t,q,p) ctrl.KE(t,q,p) + ctrl.Vd(t,q,p);

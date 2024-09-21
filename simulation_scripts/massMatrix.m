@@ -8,7 +8,7 @@ Iyy = 2005;
 Izz = 4000;
 Im= [Ixx 0 0;0 Iyy 0;0 0 Izz];
 %赋值
-%O = @(q) [0.2;0.2;0.2];
+%O = @(q) [0.2;0;0];
 O =@(q) [0;0;0];
 I = diag([1,1,1]);
 R =@(q) [cos(q(6))*cos(q(5))  cos(q(6))*sin(q(5))*sin(q(4))-sin(q(6))*cos(q(4))  cos(q(6))*sin(q(5))*cos(q(4))+sin(q(6))*sin(q(4));
