@@ -9,10 +9,7 @@ ctrl.p = @(q,p) ctrl.T(q)'*p;
 ctrl.D = @(q) sys.D(q);
 ctrl.G = @(q) ctrl.T(q)'*sys.G(q);
 % Define target trajectory and derivatives
-%定义轨迹
-ctrl.qd = @(t) [-10*(1/2)*cos(t)+5*(1/2)*sin(2*t); 10*(1/2)*cos(t);10*(1/2)*cos(t)+5*(1/2)*sin(3*t);10*(1/2)*cos(t)+5*(1/2)*sin(2*t); -10*(1/2)*cos(t)+5*(1/2)*sin(2*t);10*(1/2)*cos(t)+5*(1/2)*sin(2*t);];
-ctrl.dqd = @(t) [10*(1/2)*sin(t)+10*(1/2)*cos(2*t); -10*(1/2)*sin(t);-10*(1/2)*sin(t)+5*0.5*3*cos(3*t);-10*(1/2)*sin(t)+10*(1/2)*cos(2*t);10*(1/2)*sin(t)+10*(1/2)*cos(2*t);-10*(1/2)*sin(t)+10*(1/2)*cos(2*t)];
-ctrl.ddqd = @(t) [10*(1/2)*cos(t)-20*(1/2)*sin(2*t); -10*(1/2)*cos(t);-10*(1/2)*cos(t)-5*0.5*3*3*sin(3*t);-10*(1/2)*cos(t)-20*(1/2)*sin(2*t);10*(1/2)*cos(t)-20*(1/2)*sin(2*t);-10*(1/2)*cos(t)-20*(1/2)*sin(2*t)];
+
 % Compute the target momentum from (13)
 %期望动量的坐标变换
 ctrl.pd = @(t,q) ctrl.T(q)\ctrl.dqd(t);
@@ -28,13 +25,13 @@ ctrl.dpddq = matlabFunction(jacobian(ctrl.pd(t_sym,q_sym),q_sym),'vars',[{t_sym}
 %% Define Passivity-based sliding mode controller
 %VI. NUMERICAL EXAMPLE Case1 and K
 %K=tril(ones(6));
-beta = 1;
+beta = 90000;
 gamma = 3;
 delta = 1;
-alpha =  diag([500;500;500;500;500;500]);
+alpha = diag([90000;90000;90000;90000;90000;90000]);
 eposlion=10;
 % ctrl.phi=@(t,q,p) (K*ctrl.eq(t,q)+ctrl.ep(t,q,p));%Here q is a variable to be determined
-ctrl.phi = @(t,q,p) ctrl.ep(t,q,p) + alpha*ctrl.eq(t,q) + beta.*ctrl.eq(t,q).^(gamma/delta);
+ctrl.phi = @(t,q,p) 500*ctrl.ep(t,q,p) + alpha*ctrl.eq(t,q) + beta.*(ctrl.eq(t,q).^(gamma/delta)).*((ctrl.eq(t,q))/(sqrt(sum(ctrl.eq(t,q).^2))));
  %phi=@(q,p) K*q+tan(p);
 %Take a partial derivative of \phi
 dphideq = matlabFunction(jacobian(ctrl.phi(t_sym,q_sym,p_sym),q_sym),'vars',{q_sym,t_sym});
@@ -42,7 +39,7 @@ dphidep = matlabFunction(jacobian(ctrl.phi(t_sym,q_sym,p_sym),p_sym),'vars',{p_s
 %Replace the variable to be determined q with eq(\tilde \q)
 
 %compute the Lambda from eq.(22)
-he=sym(500*0.5*(dphideq(q_sym,t_sym)*ctrl.T(q_sym))*dphidep(p_sym,t_sym)');%这里的系数对系统收敛到滑模面上有影响
+he=sym(0.5*(dphideq(q_sym,t_sym)*ctrl.T(q_sym))*dphidep(p_sym,t_sym)');%这里的系数对系统收敛到滑模面上有影响
 %he=100000*0.5*(dphidq(q_sym)*ctrl.T(q_sym))*dphidep(t_sym,q_sym,p_sym)';
 Lambda=matlabFunction(2*(he+he'),'vars',[{q_sym,p_sym,t_sym}]);
 %
@@ -59,4 +56,4 @@ ctrl.u = @(t,q,p) ctrl.G(q)\(ctrl.D(q)*ctrl.pd(t,q) + ctrl.dpddq(t,q)*(ctrl.T(q)
 % Define  closed-loop energy in eq.(24)
 ctrl.KE = @(t,q,p) 0.5*sum(ctrl.ep(t,q,p).^2);%kinetic energy
 ctrl.U=matlabFunction((sqrt(sum(normPhi.^2))),'vars',[{t_sym},{q_sym},{p_sym}]);%potential energy
-ctrl.Hsmc = @(t,q,p) ctrl.KE(t,q,p) + ctrl.U(t,q,p);
+ctrl.Hd = @(t,q,p) ctrl.KE(t,q,p) + ctrl.U(t,q,p);

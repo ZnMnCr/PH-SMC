@@ -21,7 +21,7 @@ pa.m=6000;%动平台质量
 pa.g=[0;0;9.8];%重力加速度
 [sys]=DefineCDPR_Plant(pa.m,pa.g);
 [ctrl]=DefineTraj();
-ctrl.selector = 2;
+ctrl.selector = 1;
 %% PB-SMC控制算法设计
 if ctrl.selector  == 1
     [ctrl]=TSMCController(sys,ctrl);
@@ -36,7 +36,7 @@ sim.q0 = [0 0 0 0 0 0].';
 sim.p0 = [0 0 0 0 0 0].';
 sim.x0 = [sim.q0; sim.p0];
 
-options = odeset('OutputFcn', @myOutputFcn,'RelTol',0.1e-2);
+options = odeset('OutputFcn', @myOutputFcn,'RelTol',1e-3);
 
 
 % Comcatinate model with control law
@@ -58,7 +58,7 @@ disp("运行结束，打印数据")
 %保存数据到指定路径
 if ctrl.selector == 1
     TSMC = res;
-    save('Results/TSMC.mat', 'TSMC');%ubuntu
+    save('Results/TSMC.mat', 'TSMC');
 elseif ctrl.selector == 2
     sakata =res;
     save('Results/sakata.mat', 'sakata');
@@ -66,6 +66,6 @@ else
     Joel = res;
     save('Results/Joel.mat', 'Joel');
 end
-%save('Results\Results.mat', 'res');%windows 
+
 plotAllData(res,ctrl);%出图
 disp("打印数据结束")

@@ -20,5 +20,4 @@ for i=1:length(res.t)
     
     res.u(i,:)  =ctrl.u(res.t(i,:).',res.q(i,:).',ctrl.p(res.q(i,:).',res.p0(i,:).'));
      res.match_distur(i,:) =sys.match_distur(res.t(i,:).');
-      ctrl.Lambda(res.pe(i,:).')
 end

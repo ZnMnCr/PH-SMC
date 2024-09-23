@@ -30,10 +30,10 @@ ctrl.dpddq = matlabFunction(jacobian(ctrl.pd(t_sym,q_sym),q_sym),'vars',[{t_sym}
 %VI. NUMERICAL EXAMPLE Case1 and K
  %K=tril(ones(6));
 
- K=diag([300;300;300;300;300;300]);
+ K=diag([90000;90000;90000;90000;90000;90000]);
+ K2=diag([500;500;500;500;500;300]);
 
-
- ctrl.phi=@(t,q,p) (K*ctrl.eq(t,q)+ctrl.ep(t,q,p));%Here q is a variable to be determined
+ ctrl.phi=@(t,q,p) (K*ctrl.eq(t,q)+K2*ctrl.ep(t,q,p));%Here q is a variable to be determined
 %phi=@(q,p) K*q+tan(p);
 %Take a partial derivative of \phi
 dphideq=matlabFunction(jacobian(ctrl.phi(t_sym,q_sym,p_sym),q_sym),'vars',{q_sym});
@@ -43,14 +43,14 @@ dphidep=matlabFunction(jacobian(ctrl.phi(t_sym,q_sym,p_sym),p_sym),'vars',{p_sym
 %compute the Lambda from eq.(22)
 he=sym(0.5*(dphideq(q_sym)*ctrl.T(q_sym))*dphidep(p_sym)');%这里的系数对系统收敛到滑模面上有影响
 %he=100000*0.5*(dphidq(q_sym)*ctrl.T(q_sym))*dphidep(t_sym,q_sym,p_sym)';
-Lambda=matlabFunction(300*2*(he+he'),'vars',[{p_sym}]);
+Lambda=matlabFunction(2*(he+he'),'vars',[{p_sym}]);
 ctrl.Lambda=@(p) Lambda(p);
 %
 %Compute the partial derivative of U
 normPhi=ctrl.phi(t_sym,q_sym,p_sym);
 dUdPhi=matlabFunction((ctrl.phi(t_sym,q_sym,p_sym))/(sqrt(sum(normPhi.^2))),'vars',[{t_sym},{q_sym},{p_sym}]);
 %Then the feedback controller from eq.(23)
-epslion=0*diag([1,0.5,3,7,3,5]);
+epslion=diag([2.7,2.7,2.7,4.5,4.5,1])*0;
 ctrl.v=@(t,q,p) epslion*(ctrl.ep(t,q,p)+dphidep(p)'*dUdPhi(t,q,p))+(-inv(dphidep(p))*Lambda(p)*dUdPhi(t,q,p)+(ctrl.D(q,p))*ctrl.ep(t,q,p)-((inv(dphidep(p))*dphideq(q))*ctrl.T(q))*ctrl.ep(t,q,p));
 %ctrl.v=@(t,q,p) (-inv(dphidep(t,q,p))*Lambda(t,q,p)*dUdPhi(t,q,p)+(ctrl.D(q))*ctrl.ep(t,q,p)-((inv(dphidep(t,q,p))*dphidq())*ctrl.T(q))*ctrl.ep(t,q,p));
 %ctrl.v=@(t,q,p) zeros(6,1);  

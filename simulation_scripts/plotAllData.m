@@ -42,7 +42,7 @@ end
 
 saveas(fig2, ['Results/' '2.jpg']);
 % 创建一个新的图形窗口
-if ctrl.selector == 1
+if ctrl.selector == 1 || ctrl.selector == 2
 fig3 = figure(3);
 set(fig3, 'Position', [100 100 1000 800]); % 设置图形窗口的位置和大小
 
