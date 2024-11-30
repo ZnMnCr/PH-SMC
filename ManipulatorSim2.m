@@ -61,7 +61,7 @@ sys.Ddq = matlabFunction(jacobian(sys.H(q_sym,p_sym),q_sym).','vars',[{q_sym}, {
 sys.Ddp =  matlabFunction(jacobian(sys.H(q_sym,p_sym),p_sym).','vars',[{q_sym}, {p_sym}]);
 % Define system ODE Port-Hmailton Model of 2dof's robotic arm in eq.(25)
 %2DOF机械臂的port-hamilton model
-dx = @(q,p,u) [zeros(2) eye(2); -eye(2) -sys.D(q)]*[sys.Ddq(q,p); sys.Ddp(q,p)] + [zeros(2); sys.G(q)]*u;
+dx = @(q,p,u,t) [zeros(2) eye(2); -eye(2) -sys.D(q)]*[sys.Ddq(q,p); sys.Ddp(q,p)] + [zeros(2); sys.G(q)]*u+[zeros(2); sys.G(q)]*[sin(t);cos(t)];
 
 %% Control law
 % Compute the matrix T(q).
@@ -71,7 +71,7 @@ ctrl.D = @(q) sys.D(q);
 ctrl.G = @(q) ctrl.T(q)'*sys.G(q);
 % Define target trajectory and derivatives
 %定义轨迹
-ctrl.qd = @(t) [pi/2 + (1/2)*cos(t); (1/2)*sin(t)];
+ctrl.qd = @(t) [pi/2 + (1/2)*cos(t); (1/2)*sin(t)+2];
 ctrl.dqd = @(t) [-(1/2)*sin(t); (1/2)*cos(t)];
 ctrl.ddqd = @(t) [-(1/2)*cos(t); -(1/2)*sin(t)];
 % Compute the target momentum from (13)
@@ -89,7 +89,7 @@ ctrl.dpddq = matlabFunction(jacobian(ctrl.pd(t_sym,q_sym),q_sym),'vars',[{t_sym}
 %% Define Passivity-based sliding mode controller
 %VI. NUMERICAL EXAMPLE Case1 and K
 K=tril(ones(2));
-phi=@(q,p) atan(K*q)+p;%Here q is a variable to be determined
+phi=@(q,p) 5*atan(K*q)+p;%Here q is a variable to be determined
 %phi=@(q,p) (K*q)+tan(p);%Here q is a variable to be determined
 %Take a partial derivative of \phi
 dphidq=matlabFunction(jacobian(phi(q_sym,p_sym),q_sym),'vars',{q_sym});
@@ -98,7 +98,7 @@ dphidp=matlabFunction(jacobian(phi(q_sym,p_sym),p_sym),'vars',{p_sym});
 dphideq=matlabFunction(dphidq(ctrl.eq(t_sym,q_sym)),'vars',[{t_sym},{q_sym}]);
 %dphidep=matlabFunction(dphidp(ctrl.ep(t_sym,q_sym,p_sym)),'vars',[{t_sym},{q_sym},{p_sym}]);
 %compute the Lambda from eq.(22)
-he=0.95*0.5*(dphideq(t_sym,q_sym)*ctrl.T(q_sym))*dphidp()';%这里的系数对系统收敛到滑模面上有影响
+he=0.5*(dphideq(t_sym,q_sym)*ctrl.T(q_sym))*dphidp()';%这里的系数对系统收敛到滑模面上有影响
 %he=1*0.5*(dphidq(q_sym)*ctrl.T(q_sym))*dphidep(t_sym,q_sym,p_sym)';
 Lambda=(matlabFunction(2*(he+he'),'vars',[{t_sym},{q_sym},{p_sym}]));
 
@@ -106,7 +106,8 @@ Lambda=(matlabFunction(2*(he+he'),'vars',[{t_sym},{q_sym},{p_sym}]));
 normPhi=phi(ctrl.eq(t_sym,q_sym),ctrl.ep(t_sym,q_sym,p_sym));
 dUdPhi=matlabFunction((phi(ctrl.eq(t_sym,q_sym),ctrl.ep(t_sym,q_sym,p_sym))/(sqrt(sum(normPhi.^2)))),'vars',[{t_sym},{q_sym},{p_sym}]);
 %Then the feedback controller from eq.(23)
-ctrl.v=@(t,q,p) (-inv(dphidp())*Lambda(t,q)*dUdPhi(t,q,p)+(ctrl.D(q))*ctrl.ep(t,q,p)-((inv(dphidp())*dphideq(t,q))*ctrl.T(q))*ctrl.ep(t,q,p));
+epslion=0*diag([1,1]);
+ctrl.v=@(t,q,p) epslion*(ctrl.ep(t,q,p)+dphidp(p)'*dUdPhi(t,q,p))+(-inv(dphidp())*Lambda(t,q)*dUdPhi(t,q,p)+(ctrl.D(q))*ctrl.ep(t,q,p)-((inv(dphidp())*dphideq(t,q))*ctrl.T(q))*ctrl.ep(t,q,p));
 %ctrl.v=@(t,q,p) (-inv(dphidep(t,q,p))*Lambda(t,q,p)*dUdPhi(t,q,p)+(ctrl.D(q))*ctrl.ep(t,q,p)-((inv(dphidep(t,q,p))*dphidq())*ctrl.T(q))*ctrl.ep(t,q,p));
 
 %input u from eq.(20)
@@ -123,7 +124,7 @@ sim.p0 = [1 2].';
 sim.x0 = [sim.q0; sim.p0];
 
 % Comcatinate model with control law
-ode = @(t,x) dx(x(1:2),x(3:4),ctrl.u(t,x(1:2),ctrl.p(x(1:2),x(3:4))));
+ode = @(t,x) dx(x(1:2),x(3:4),ctrl.u(t,x(1:2),ctrl.p(x(1:2),x(3:4))),t);
 
 % Solve ODE
 [res.t,res.x] = ode23(ode,[0:sim.delta_t:sim.t_end],sim.x0,odeset('RelTol',1e-2));
@@ -181,6 +182,9 @@ title('The responses of $\sigma$')
 fig4=figure(4)
 plot(res.t,res.u)
 title('The responses of u')
+fig5=figure(5)
+plot(res.t,res.qe)
+title('The responses of error')
 
 %% 
 function [T]= manualCholesky(A)

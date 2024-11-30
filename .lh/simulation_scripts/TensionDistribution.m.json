@@ -1,0 +1,34 @@
+{
+    "sourceFile": "simulation_scripts/TensionDistribution.m",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 4,
+            "patches": [
+                {
+                    "date": 1731660019700,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1731660232429,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,10 +1,10 @@\n-function [T_optimal,W]=TensionDistribution(sys,ctrl)\r\n+function [T_optimal,W]=TensionDistribution(J,W)\r\n+    %Cable force distribution by quadratic programming with \r\n+    % the constraint that the cable force is greater than 0\r\n+    %input；CDPR structural matrix J，End force W\r\n+    %output；Optimal tension T_optimal，and the corresponding end forces W\r\n \r\n-\r\n-\r\n-J=sys.J;\r\n-W=ctrl.u;\r\n % 绳索数量\r\n num_cables = size(J, 2);\r\n \r\n \r\n"
+                },
+                {
+                    "date": 1731662521411,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -22,5 +22,5 @@\n \r\n % 求解二次规划\r\n [T_optimal, fval, exitflag, output] = quadprog(H, f, G, h,Aeq,beq, [], [], [], options);\r\n \r\n-W = J*T_optimal;\n\\ No newline at end of file\n+W = J*T_optimal\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1731662609459,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -0,0 +1,26 @@\n+function [T_optimal,W]=TensionDistribution(J,W)\r\n+    %Cable force distribution by quadratic programming with \r\n+    % the constraint that the cable force is greater than 0\r\n+    %input；CDPR structural matrix J，End force W\r\n+    %output；Optimal tension T_optimal，and the corresponding end forces W\r\n+\r\n+% 绳索数量\r\n+num_cables = size(J, 2);\r\n+\r\n+\r\n+% 定义二次规划参数\r\n+H =  eye(num_cables);            % 二次项矩阵 (用于最小化偏差平方和)\r\n+f = [];  % 线性项，用于将拉力引导到接近 T_avg\r\n+\r\n+% 不等式约束条件：T >= 0\r\n+G = -eye(num_cables);\r\n+h = zeros(num_cables, 1);\r\n+Aeq = J;\r\n+beq = W;\r\n+% 优化选项设置\r\n+options = optimoptions('quadprog', 'Display', 'off');\r\n+\r\n+% 求解二次规划\r\n+[T_optimal, fval, exitflag, output] = quadprog(H, f, G, h,Aeq,beq, [], [], [], options);\r\n+T_optimal\r\n+W = J*T_optimal;\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1731663009880,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -21,32 +21,6 @@\n options = optimoptions('quadprog', 'Display', 'off');\r\n \r\n % 求解二次规划\r\n [T_optimal, fval, exitflag, output] = quadprog(H, f, G, h,Aeq,beq, [], [], [], options);\r\n-T_optimal\r\n-W = J*T_optimal;\n-function [T_optimal,W]=TensionDistribution(J,W)\r\n-    %Cable force distribution by quadratic programming with \r\n-    % the constraint that the cable force is greater than 0\r\n-    %input；CDPR structural matrix J，End force W\r\n-    %output；Optimal tension T_optimal，and the corresponding end forces W\r\n \r\n-% 绳索数量\r\n-num_cables = size(J, 2);\r\n-\r\n-\r\n-% 定义二次规划参数\r\n-H =  eye(num_cables);            % 二次项矩阵 (用于最小化偏差平方和)\r\n-f = [];  % 线性项，用于将拉力引导到接近 T_avg\r\n-\r\n-% 不等式约束条件：T >= 0\r\n-G = -eye(num_cables);\r\n-h = zeros(num_cables, 1);\r\n-Aeq = J;\r\n-beq = W;\r\n-% 优化选项设置\r\n-options = optimoptions('quadprog', 'Display', 'off');\r\n-\r\n-% 求解二次规划\r\n-[T_optimal, fval, exitflag, output] = quadprog(H, f, G, h,Aeq,beq, [], [], [], options);\r\n-\r\n-W = J*T_optimal\n\\ No newline at end of file\n+W = J*T_optimal;\n\\ No newline at end of file\n"
+                }
+            ],
+            "date": 1731660019700,
+            "name": "Commit-0",
+            "content": "function [T_optimal,W]=TensionDistribution(sys,ctrl)\r\n\r\n\r\n\r\nJ=sys.J;\r\nW=ctrl.u;\r\n% 绳索数量\r\nnum_cables = size(J, 2);\r\n\r\n\r\n% 定义二次规划参数\r\nH =  eye(num_cables);            % 二次项矩阵 (用于最小化偏差平方和)\r\nf = [];  % 线性项，用于将拉力引导到接近 T_avg\r\n\r\n% 不等式约束条件：T >= 0\r\nG = -eye(num_cables);\r\nh = zeros(num_cables, 1);\r\nAeq = J;\r\nbeq = W;\r\n% 优化选项设置\r\noptions = optimoptions('quadprog', 'Display', 'off');\r\n\r\n% 求解二次规划\r\n[T_optimal, fval, exitflag, output] = quadprog(H, f, G, h,Aeq,beq, [], [], [], options);\r\n\r\nW = J*T_optimal;"
+        }
+    ]
+}

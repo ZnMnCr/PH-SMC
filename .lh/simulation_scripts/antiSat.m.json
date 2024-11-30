@@ -1,0 +1,22 @@
+{
+    "sourceFile": "simulation_scripts/antiSat.m",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1732963245085,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1732963761225,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,4 +1,6 @@\n-function sat_val = antiSat(x, lambda_max)\r\n-    % 限制 x 在 [0, lambda_max] 范围内\r\n-    sat_val = min(x, lambda_max);\r\n+function k4_sat = antiSat(x, kMax)\r\n+    k4 = x(67);\r\n+\r\n+    k4_sat = kMax*((k4 >= kMax) + (k4 < kMax).* (k4 / kMax));\r\n+    \r\n end\r\n"
+                }
+            ],
+            "date": 1732963245085,
+            "name": "Commit-0",
+            "content": "function sat_val = antiSat(x, lambda_max)\r\n    % 限制 x 在 [0, lambda_max] 范围内\r\n    sat_val = min(x, lambda_max);\r\nend\r\n"
+        }
+    ]
+}

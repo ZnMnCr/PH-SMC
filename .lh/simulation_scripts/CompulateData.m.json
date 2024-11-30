@@ -1,0 +1,26 @@
+{
+    "sourceFile": "simulation_scripts/CompulateData.m",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 2,
+            "patches": [
+                {
+                    "date": 1732871782705,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1732871969857,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,7 +17,7 @@\n     res.pe(i,:) = ctrl.ep(res.t(i),res.q(i,:).',res.p(i,:).');\r\n     if ctrl.selector == 1 || ctrl.selector == 2\r\n         res.phi(i,:)=ctrl.phi(res.t(i),res.q(i,:).',res.p(i,:).');\r\n     end\r\n-    res.u(i,:)  =ctrl.u(res.k4,res.t(i,:).',res.q(i,:).',ctrl.p(res.q(i,:).',res.p0(i,:).'));\r\n+    res.u(i,:)  =ctrl.u(res.k4.',res.t(i,:).',res.q(i,:).',ctrl.p(res.q(i,:).',res.p0(i,:).'));\r\n      res.match_distur(i,:) =sys.match_distur(res.t(i,:).');\r\n end\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1732872025206,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,7 +17,7 @@\n     res.pe(i,:) = ctrl.ep(res.t(i),res.q(i,:).',res.p(i,:).');\r\n     if ctrl.selector == 1 || ctrl.selector == 2\r\n         res.phi(i,:)=ctrl.phi(res.t(i),res.q(i,:).',res.p(i,:).');\r\n     end\r\n-    res.u(i,:)  =ctrl.u(res.k4.',res.t(i,:).',res.q(i,:).',ctrl.p(res.q(i,:).',res.p0(i,:).'));\r\n+    res.u(i,:)  =ctrl.u(res.k4(i),res.t(i,:).',res.q(i,:).',ctrl.p(res.q(i,:).',res.p0(i,:).'));\r\n      res.match_distur(i,:) =sys.match_distur(res.t(i,:).');\r\n end\n\\ No newline at end of file\n"
+                }
+            ],
+            "date": 1732871782705,
+            "name": "Commit-0",
+            "content": "function [res]=CompulateData(res,sys,ctrl)\r\nres.H = zeros(length(res.t),1);\r\nres.Hd = zeros(length(res.t),1);\r\nres.Hp = zeros(length(res.t),1);\r\nres.qd = zeros(length(res.t),6);\r\nres.qe = zeros(length(res.t),6);\r\nres.p =zeros(length(res.t),6);\r\nres.phi=zeros(length(res.t),6);\r\nres.Kd = zeros(length(res.t),6);\r\nfor i=1:length(res.t)\r\n    res.H(i)    = sys.H(res.q(i,:).',res.p0(i,:).');\r\n    res.p(i,:)  = (ctrl.T(res.q(i,:).')'*res.p0(i,:).').';\r\n    res.Hd(i) = ctrl.Hd(res.t(i),res.q(i,:).',res.p(i,:).');\r\n    res.qd(i,:) = ctrl.qd(res.t(i)).';\r\n    res.pd(i,:) =ctrl.pd(res.t(i),ctrl.qd(res.t(i))).';\r\n    res.qe(i,:) = res.q(i,:) - res.qd(i,:);\r\n    res.pe(i,:) = ctrl.ep(res.t(i),res.q(i,:).',res.p(i,:).');\r\n    if ctrl.selector == 1 || ctrl.selector == 2\r\n        res.phi(i,:)=ctrl.phi(res.t(i),res.q(i,:).',res.p(i,:).');\r\n    end\r\n    res.u(i,:)  =ctrl.u(res.k4,res.t(i,:).',res.q(i,:).',ctrl.p(res.q(i,:).',res.p0(i,:).'));\r\n     res.match_distur(i,:) =sys.match_distur(res.t(i,:).');\r\nend"
+        }
+    ]
+}

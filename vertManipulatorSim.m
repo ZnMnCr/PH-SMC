@@ -85,7 +85,7 @@ sys.dHdq = matlabFunction(jacobian(sys.H(q_sym,p_sym),q_sym).','vars',[{q_sym}, 
 sys.dHdp = @(q,p) sys.M(q)\p;
 
 % Define system ODE
-dx = @(q,p,u) [zeros(2) eye(2); -eye(2) -sys.D(q)]*[sys.dHdq(q,p); sys.dHdp(q,p)] + [zeros(2); sys.G(q)]*u;
+dx = @(q,p,u,t) [zeros(2) eye(2); -eye(2) -sys.D(q)]*[sys.dHdq(q,p); sys.dHdp(q,p)] + [zeros(2); sys.G(q)]*u+[zeros(2); sys.G(q)]*[sin(t);cos(t)];
 
 %% Control law
 % Compute the matrix T^{-1}(q) using the solution from https://en.wikipedia.org/wiki/Square_root_of_a_2_by_2_matrix
@@ -125,7 +125,7 @@ ctrl.Kd = 10*eye(2);
 
 % Define kinetic-potential energy shaping tracking control closed-loop
 % energy as per (27)
-ctrl.Kp = eye(2);
+ctrl.Kp = 4*eye(2);
 ctrl.KE = @(t,q,p) 0.5*ctrl.ep(t,q,p).'*ctrl.ep(t,q,p);
 ctrl.Vd = @(t,q,p) 0.5*(ctrl.eq(t,q) + ctrl.alpha*ctrl.ep(t,q,p)).'*ctrl.Kp*(ctrl.eq(t,q) + ctrl.alpha*ctrl.ep(t,q,p));
 ctrl.Hd = @(t,q,p) ctrl.KE(t,q,p) + ctrl.Vd(t,q,p);
@@ -142,7 +142,7 @@ sim.p0 = [1 2].';
 sim.x0 = [sim.q0; sim.p0];
 
 % Comcatinate model with control law
-ode = @(t,x) dx(x(1:2),x(3:4),ctrl.u(t,x(1:2),ctrl.p(x(1:2),x(3:4))));
+ode = @(t,x) dx(x(1:2),x(3:4),ctrl.u(t,x(1:2),ctrl.p(x(1:2),x(3:4))),t);
 
 % Solve ODE
 [res.t,res.x] = ode45(ode,[0:sim.delta_t:sim.t_end],sim.x0,odeset('RelTol',1e-6));

@@ -1,0 +1,30 @@
+{
+    "sourceFile": "simulation_scripts/saturationEvent.m",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 3,
+            "patches": [
+                {
+                    "date": 1732963246775,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1732963758297,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,6 @@\n-function [value, isterminal, direction] = saturationEvent(x, lambda_max)\r\n+function [value, isterminal, direction] = saturationEvent(x, kMax)\r\n     % 检测条件\r\n-    value = x - lambda_max;      % 如果 x >= lambda_max，触发事件\r\n+    value = x(67) - kMAX;      % 如果 x >= lambda_max，触发事件\r\n     isterminal = 1;              % 终止当前步并调整状态\r\n     direction = 1;               % 单向检测（x 变大时触发）\r\n end\r\n"
+                },
+                {
+                    "date": 1732963897366,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,6 @@\n function [value, isterminal, direction] = saturationEvent(x, kMax)\r\n     % 检测条件\r\n-    value = x(67) - kMAX;      % 如果 x >= lambda_max，触发事件\r\n+    value = x(67) - kMax;      % 如果 x >= lambda_max，触发事件\r\n     isterminal = 1;              % 终止当前步并调整状态\r\n     direction = 1;               % 单向检测（x 变大时触发）\r\n end\r\n"
+                },
+                {
+                    "date": 1732968724773,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,5 +2,6 @@\n     % 检测条件\r\n     value = x(67) - kMax;      % 如果 x >= lambda_max，触发事件\r\n     isterminal = 1;              % 终止当前步并调整状态\r\n     direction = 1;               % 单向检测（x 变大时触发）\r\n+    \r\n end\r\n"
+                }
+            ],
+            "date": 1732963246775,
+            "name": "Commit-0",
+            "content": "function [value, isterminal, direction] = saturationEvent(x, lambda_max)\r\n    % 检测条件\r\n    value = x - lambda_max;      % 如果 x >= lambda_max，触发事件\r\n    isterminal = 1;              % 终止当前步并调整状态\r\n    direction = 1;               % 单向检测（x 变大时触发）\r\nend\r\n"
+        }
+    ]
+}

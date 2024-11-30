@@ -1,0 +1,54 @@
+{
+    "sourceFile": "simulation_scripts/DefineDisturbance.m",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 9,
+            "patches": [
+                {
+                    "date": 1729843492929,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1732456081799,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,6 @@\n function [sys]=DefineDisturbance(sys)\n % 定义匹配干扰\n t_start_disturbance = 0; % 干扰开始的时间\n-disturbance_amplitude = [1000000;700000;700000;1000000;700000;0]*0.1; % 干扰的幅值\n-t_end_disturbance = 5;\n+disturbance_amplitude = [1000000;700000;700000;1000000;700000;0]*0.01; % 干扰的幅值\n+t_end_disturbance = 6; % 干扰结束的时间\n sys.match_distur = @(t) disturbance_amplitude * (t >= t_start_disturbance && t <=t_end_disturbance);\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1732456277799,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,6 @@\n function [sys]=DefineDisturbance(sys)\n % 定义匹配干扰\n t_start_disturbance = 0; % 干扰开始的时间\n-disturbance_amplitude = [1000000;700000;700000;1000000;700000;0]*0.01; % 干扰的幅值\n+disturbance_amplitude = [100000;700000;700000;1000000;700000;0]*0.01; % 干扰的幅值\n t_end_disturbance = 6; % 干扰结束的时间\n sys.match_distur = @(t) disturbance_amplitude * (t >= t_start_disturbance && t <=t_end_disturbance);\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1732503773567,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -0,0 +1,6 @@\n+function [sys]=DefineDisturbance(sys)\n+% 定义匹配干扰\n+t_start_disturbance = 0; % 干扰开始的时间\n+disturbance_amplitude = [1000000;700000;700000;1000000;700000;0]*0.01; % 干扰的幅值\n+t_end_disturbance = 6; % 干扰结束的时间\n+sys.match_distur = @(t) disturbance_amplitude * (t >= t_start_disturbance && t <=t_end_disturbance);\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1732522247741,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,12 +1,6 @@\n function [sys]=DefineDisturbance(sys)\n % 定义匹配干扰\n t_start_disturbance = 0; % 干扰开始的时间\n disturbance_amplitude = [1000000;700000;700000;1000000;700000;0]*0.01; % 干扰的幅值\n-t_end_disturbance = 6; % 干扰结束的时间\n-sys.match_distur = @(t) disturbance_amplitude * (t >= t_start_disturbance && t <=t_end_disturbance);\n-function [sys]=DefineDisturbance(sys)\n-% 定义匹配干扰\n-t_start_disturbance = 0; % 干扰开始的时间\n-disturbance_amplitude = [100000;700000;700000;1000000;700000;0]*0.01; % 干扰的幅值\n-t_end_disturbance = 6; % 干扰结束的时间\n+t_end_disturbance = 10; % 干扰结束的时间\n sys.match_distur = @(t) disturbance_amplitude * (t >= t_start_disturbance && t <=t_end_disturbance);\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1732525596313,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,6 @@\n function [sys]=DefineDisturbance(sys)\n % 定义匹配干扰\n t_start_disturbance = 0; % 干扰开始的时间\n-disturbance_amplitude = [1000000;700000;700000;1000000;700000;0]*0.01; % 干扰的幅值\n+disturbance_amplitude = [1000000;700000;700000;1000000;700000;0]*sin(t)*0.01; % 干扰的幅值\n t_end_disturbance = 10; % 干扰结束的时间\n sys.match_distur = @(t) disturbance_amplitude * (t >= t_start_disturbance && t <=t_end_disturbance);\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1732525614073,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,6 @@\n function [sys]=DefineDisturbance(sys)\n % 定义匹配干扰\n t_start_disturbance = 0; % 干扰开始的时间\n-disturbance_amplitude = [1000000;700000;700000;1000000;700000;0]*sin(t)*0.01; % 干扰的幅值\n+disturbance_amplitude = [1000000;700000;700000;1000000;700000;0]*0.01; % 干扰的幅值\n t_end_disturbance = 10; % 干扰结束的时间\n\\ No newline at end of file\n-sys.match_distur = @(t) disturbance_amplitude * (t >= t_start_disturbance && t <=t_end_disturbance);\n+sys.match_distur = @(t) disturbance_amplitude*sin(t) * (t >= t_start_disturbance && t <=t_end_disturbance);\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1732525799239,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,5 +2,5 @@\n % 定义匹配干扰\n t_start_disturbance = 0; % 干扰开始的时间\n disturbance_amplitude = [1000000;700000;700000;1000000;700000;0]*0.01; % 干扰的幅值\n t_end_disturbance = 10; % 干扰结束的时间\n-sys.match_distur = @(t) disturbance_amplitude*sin(t) * (t >= t_start_disturbance && t <=t_end_disturbance);\n\\ No newline at end of file\n+sys.match_distur = @(t) disturbance_amplitude * (t >= t_start_disturbance && t <=t_end_disturbance);\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1732531221957,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,5 +2,5 @@\n % 定义匹配干扰\n t_start_disturbance = 0; % 干扰开始的时间\n disturbance_amplitude = [1000000;700000;700000;1000000;700000;0]*0.01; % 干扰的幅值\n t_end_disturbance = 10; % 干扰结束的时间\n-sys.match_distur = @(t) disturbance_amplitude * (t >= t_start_disturbance && t <=t_end_disturbance);\n\\ No newline at end of file\n+sys.match_distur = @(t) disturbance_amplitude*(2*sin(t)+sin(10*t)) * (t >= t_start_disturbance && t <=t_end_disturbance);\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1732872524049,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,6 @@\n function [sys]=DefineDisturbance(sys)\n % 定义匹配干扰\n t_start_disturbance = 0; % 干扰开始的时间\n-disturbance_amplitude = [1000000;700000;700000;1000000;700000;0]*0.01; % 干扰的幅值\n+disturbance_amplitude = [1000000;700000;700000;1000000;700000;0]*0.08; % 干扰的幅值\n t_end_disturbance = 10; % 干扰结束的时间\n sys.match_distur = @(t) disturbance_amplitude*(2*sin(t)+sin(10*t)) * (t >= t_start_disturbance && t <=t_end_disturbance);\n\\ No newline at end of file\n"
+                }
+            ],
+            "date": 1729843492929,
+            "name": "Commit-0",
+            "content": "function [sys]=DefineDisturbance(sys)\n% 定义匹配干扰\nt_start_disturbance = 0; % 干扰开始的时间\ndisturbance_amplitude = [1000000;700000;700000;1000000;700000;0]*0.1; % 干扰的幅值\nt_end_disturbance = 5;\nsys.match_distur = @(t) disturbance_amplitude * (t >= t_start_disturbance && t <=t_end_disturbance);"
+        }
+    ]
+}
