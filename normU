@@ -1,0 +1,16 @@
+clc
+clear 
+close all
+s=-2:0.05:2;
+r1=2;
+m1=2;
+r=1.5;
+m=2;
+for i=1:length(s)
+   U(i)=norm(s(i))^-0.5;
+   dU(i)=r1*(((sum())^m1)^(r1-m1))*(abs(s(i))^(m1-1))*sign(s(i));
+end
+dU(41)=0;
+plot(s,U)
+figure(2)
+plot(s,dU)
