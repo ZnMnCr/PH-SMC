@@ -1,10 +1,10 @@
-function [sys]=DefineCDPR_Plant(m,g)
+function [sys]=DefineCDPR_Plant(m,g,sys)
 
 syms q1 q2 q3 q4 q5 q6 p1 p2 p3 p4 p5 p6 t_sym
 q_sym = [q1 q2 q3 q4 q5 q6].';
 p_sym = [p1 p2 p3 p4 p5 p6].';
 
-[sys.M,sys.P]=massMatrix(m,g);%计算质量矩阵和势能函数
+[sys.M,sys.P]=CDPRmassMatrix(m,g);%计算质量矩阵和势能函数
 
 sys.V=sys.P;
 sys.H = @(q,p) 0.5*p.'*(sys.M(q)\p) + sum(sys.V(q));%CDPR的能量函数
@@ -15,7 +15,5 @@ sys.Hdq = matlabFunction(jacobian(sys.H(q_sym,p_sym),q_sym).','vars',[{q_sym}, {
 sys.Hdp =  matlabFunction(jacobian(sys.H(q_sym,p_sym),p_sym).','vars',[{q_sym}, {p_sym}]);
 sys.dVdq = matlabFunction(jacobian(sum(sys.V(q_sym)),q_sym).','vars',{q_sym});
 
-% 定义匹配干扰
-
-[sys]=DefineDisturbance(sys);
-sys.dx = @(q,p,u,t) [zeros(6) eye(6); -eye(6) -sys.D(q)]*[sys.Hdq(q,p); sys.Hdp(q,p)] + [zeros(6); sys.G(q)]*(u+sys.match_distur(t));
+sys.match_distur= @(t) DefineDisturbance(t);
+sys.dx = @(q,p,u,t) [zeros(6) eye(6); -eye(6) -sys.D(q)]*[sys.Hdq(q,p); sys.Hdp(q,p)] + [zeros(6); sys.G(q)]*u;

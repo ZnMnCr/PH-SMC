@@ -18,6 +18,11 @@ for i=1:length(res.t)
     if ctrl.selector == 1 || ctrl.selector == 2
         res.phi(i,:)=ctrl.phi(res.t(i),res.q(i,:).',res.p(i,:).');
     end
+    res.Kd(i,:)=ctrl.Kd(res.t(i),res.q(i,:).');
+    if ctrl.selector == 1
     res.u(i,:)  =ctrl.u(res.k4(i),res.t(i,:).',res.q(i,:).',ctrl.p(res.q(i,:).',res.p0(i,:).'));
+    else
+     res.u(i,:)  =ctrl.u(res.t(i,:).',res.q(i,:).',ctrl.p(res.q(i,:).',res.p0(i,:).'));   
+    end
      res.match_distur(i,:) =sys.match_distur(res.t(i,:).');
 end

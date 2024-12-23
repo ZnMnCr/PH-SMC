@@ -1,0 +1,26 @@
+{
+    "sourceFile": "JoelPBC/simulation_scripts/DefineCDPR_Plant.m",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 2,
+            "patches": [
+                {
+                    "date": 1734699881914,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1734851546874,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -15,5 +15,5 @@\n sys.Hdp =  matlabFunction(jacobian(sys.H(q_sym,p_sym),p_sym).','vars',[{q_sym}, {p_sym}]);\r\n sys.dVdq = matlabFunction(jacobian(sum(sys.V(q_sym)),q_sym).','vars',{q_sym});\r\n \r\n [sys.match_distur]=DefineDisturbance();\r\n-sys.dx = @(q,p,u,t) [zeros(6) eye(6); -eye(6) -sys.D(q)]*[sys.Hdq(q,p); sys.Hdp(q,p)] + [zeros(6); sys.G(q)]*u+ [zeros(6); sys.G(q)]*sys.match_distur(t);\n\\ No newline at end of file\n+sys.dx = @(q,p,u,t) [zeros(6) eye(6); -eye(6) -sys.D(q)]*[sys.Hdq(q,p); sys.Hdp(q,p)] + [zeros(6); sys.G(q)]*u;\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1734853363333,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -14,6 +14,6 @@\n sys.Hdq = matlabFunction(jacobian(sys.H(q_sym,p_sym),q_sym).','vars',[{q_sym}, {p_sym}]);\r\n sys.Hdp =  matlabFunction(jacobian(sys.H(q_sym,p_sym),p_sym).','vars',[{q_sym}, {p_sym}]);\r\n sys.dVdq = matlabFunction(jacobian(sum(sys.V(q_sym)),q_sym).','vars',{q_sym});\r\n \r\n-[sys.match_distur]=DefineDisturbance();\r\n+sys.match_distur= @(t) DefineDisturbance(t);\r\n sys.dx = @(q,p,u,t) [zeros(6) eye(6); -eye(6) -sys.D(q)]*[sys.Hdq(q,p); sys.Hdp(q,p)] + [zeros(6); sys.G(q)]*u;\n\\ No newline at end of file\n"
+                }
+            ],
+            "date": 1734699881914,
+            "name": "Commit-0",
+            "content": "function [sys]=DefineCDPR_Plant(m,g,sys)\r\n\r\nsyms q1 q2 q3 q4 q5 q6 p1 p2 p3 p4 p5 p6 t_sym\r\nq_sym = [q1 q2 q3 q4 q5 q6].';\r\np_sym = [p1 p2 p3 p4 p5 p6].';\r\n\r\n[sys.M,sys.P]=CDPRmassMatrix(m,g);%计算质量矩阵和势能函数\r\n\r\nsys.V=sys.P;\r\nsys.H = @(q,p) 0.5*p.'*(sys.M(q)\\p) + sum(sys.V(q));%CDPR的能量函数\r\n%sys.D= @(q) diag([5,2,3,1,2,1]);\r\nsys.D= @(q) diag([0.1,0.1,0.1,0.1,0.1,0.1]);\r\nsys.G = @(q) diag([1;1;1;1;1;1]);\r\nsys.Hdq = matlabFunction(jacobian(sys.H(q_sym,p_sym),q_sym).','vars',[{q_sym}, {p_sym}]);\r\nsys.Hdp =  matlabFunction(jacobian(sys.H(q_sym,p_sym),p_sym).','vars',[{q_sym}, {p_sym}]);\r\nsys.dVdq = matlabFunction(jacobian(sum(sys.V(q_sym)),q_sym).','vars',{q_sym});\r\n\r\n[sys.match_distur]=DefineDisturbance();\r\nsys.dx = @(q,p,u,t) [zeros(6) eye(6); -eye(6) -sys.D(q)]*[sys.Hdq(q,p); sys.Hdp(q,p)] + [zeros(6); sys.G(q)]*u+ [zeros(6); sys.G(q)]*sys.match_distur(t);"
+        }
+    ]
+}

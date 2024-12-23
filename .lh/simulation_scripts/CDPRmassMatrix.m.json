@@ -1,0 +1,26 @@
+{
+    "sourceFile": "simulation_scripts/CDPRmassMatrix.m",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 2,
+            "patches": [
+                {
+                    "date": 1734699630744,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1734869953836,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -8,8 +8,10 @@\n Izz = 4000;\r\n Im= [Ixx 0 0;0 Iyy 0;0 0 Izz];\r\n %赋值\r\n %O = @(q) [0.2;0;0];\r\n+m=6000\r\n+g=9.8\r\n O =@(q) [0;0;0];\r\n I = diag([1,1,1]);\r\n R =@(q) [cos(q(6))*cos(q(5))  cos(q(6))*sin(q(5))*sin(q(4))-sin(q(6))*cos(q(4))  cos(q(6))*sin(q(5))*cos(q(4))+sin(q(6))*sin(q(4));\r\n    sin(q(6))*cos(q(5))  sin(q(6))*sin(q(5))*sin(q(4))+cos(q(6))*cos(q(4))  sin(q(6))*sin(q(5))*sin(q(4))-cos(q(6))*sin(q(4));\r\n"
+                },
+                {
+                    "date": 1734870337055,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -6,12 +6,9 @@\n Ixx = 2005;\r\n Iyy = 2005;\r\n Izz = 4000;\r\n Im= [Ixx 0 0;0 Iyy 0;0 0 Izz];\r\n-%赋值\r\n-%O = @(q) [0.2;0;0];\r\n-m=6000\r\n-g=9.8\r\n+\r\n O =@(q) [0;0;0];\r\n I = diag([1,1,1]);\r\n R =@(q) [cos(q(6))*cos(q(5))  cos(q(6))*sin(q(5))*sin(q(4))-sin(q(6))*cos(q(4))  cos(q(6))*sin(q(5))*cos(q(4))+sin(q(6))*sin(q(4));\r\n    sin(q(6))*cos(q(5))  sin(q(6))*sin(q(5))*sin(q(4))+cos(q(6))*cos(q(4))  sin(q(6))*sin(q(5))*sin(q(4))-cos(q(6))*sin(q(4));\r\n"
+                }
+            ],
+            "date": 1734699630744,
+            "name": "Commit-0",
+            "content": "function [M,P]=CDPRmassMatrix(m,g)\r\nsyms q1 q2 q3 q4 q5 q6 p1 p2 p3 p4 p5 p6 t_sym\r\nq_sym = [q1 q2 q3 q4 q5 q6].';\r\np_sym = [p1 p2 p3 p4 p5 p6].';\r\n\r\nIxx = 2005;\r\nIyy = 2005;\r\nIzz = 4000;\r\nIm= [Ixx 0 0;0 Iyy 0;0 0 Izz];\r\n%赋值\r\n%O = @(q) [0.2;0;0];\r\nO =@(q) [0;0;0];\r\nI = diag([1,1,1]);\r\nR =@(q) [cos(q(6))*cos(q(5))  cos(q(6))*sin(q(5))*sin(q(4))-sin(q(6))*cos(q(4))  cos(q(6))*sin(q(5))*cos(q(4))+sin(q(6))*sin(q(4));\r\n   sin(q(6))*cos(q(5))  sin(q(6))*sin(q(5))*sin(q(4))+cos(q(6))*cos(q(4))  sin(q(6))*sin(q(5))*sin(q(4))-cos(q(6))*sin(q(4));\r\n      -sin(q(5))                         cos(q(5))*sin(q(4))                             cos(q(5))*cos(q(4))        ];\r\n RO=R(q_sym)*O(q_sym);\r\ninti_RO=[0 -RO(3,:) RO(2,:);RO(3,:) 0 -RO(1,:);-RO(2,:) RO(1,:) 0];  %RO的反对称矩阵\r\n%矩阵\r\nIG = Im-m*inti_RO*inti_RO;\r\nM =matlabFunction([ m*I  -m*inti_RO; m*inti_RO  IG],'vars',[{q_sym}]);\r\nG=[m*g;inti_RO*m*g];\r\nP=matlabFunction((diag(q_sym)*G),'vars',[{q_sym}]);"
+        }
+    ]
+}

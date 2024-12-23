@@ -34,7 +34,7 @@ for i = 1:6
     % 绘制q和qd
     plot(res.t, res.q(:,i), colors{i}); 
     plot(res.t, res.qd(:,i), '--','Color',[0 0 0]);
-    plot(res.t, res.q_hat2(:,i), '--','Color',[1 0 0]);
+    % plot(res.t, res.q_hat2(:,i), '--','Color',[1 0 0]);
     xlabel('Time (s)');
     ylabel('position');
    % 设置图例
@@ -85,7 +85,7 @@ for i = 1:6
     subplot(3,2,i);
     hold on;
     
-    plot(res.t,res.u(:,i), colors{i}); 
+    plot(res.t(2:end),res.u(2:end,i), colors{i}); 
     xlabel('Time (s)');
     ylabel('Force (N)');
    % 设置图例
@@ -125,7 +125,7 @@ for i = 1:6
     subplot(3,2,i);
     hold on;
     
-    plot(res.t,res.match_distur(:,i), '--','Color',[0 0 0]); 
+    plot(res.t,res.match_distur(:,i), '-','Color',[0 0 0]); 
      plot(res.t,res.dis(:,i), colors{i}); 
     xlabel('Time (s)');
     ylabel('Force (N)');
@@ -182,9 +182,9 @@ for i = 1:6
     subplot(3,2,i);
     hold on;
     % 绘制q和qd
-    plot(res.t, res.p0(:,i), colors{i}); 
+    plot(res.t, res.p(:,i), colors{i}); 
     plot(res.t, res.pd(:,i), '--','Color',[0 0 0]);
-    plot(res.t, res.p_hat2(:,i), '--','Color',[0 0 0]);
+    % plot(res.t, res.p_hat2(:,i), '--','Color',[0 0 0]);
     xlabel('Time (s)');
     ylabel('p');
    % 设置图例
@@ -192,11 +192,46 @@ for i = 1:6
     set(leg, 'Interpreter', 'latex'); % 设置LaTeX解释器
 end
 sgtitle('The responses of p');
-figure(9);
+if ctrl.selector == 1
+
+fig9 = figure(9);
 plot(res.t,res.k4);
 disp("非线性级联观测器平均绝对偏差")
 data = res.dis - res.match_distur;
 mad(data,0)
+end
+fig10 = figure(10);
+colors = {'b', 'g', 'r', 'c', 'm', 'y'}; % 不同的颜色
+
+for i = 1:6
+    subplot(3,2,i);
+    hold on;
+    % 绘制q和qd
+    plot(res.t, res.Kd(:,i), colors{i}); 
+
+    xlabel('Time (s)');
+    ylabel('damping');
+   % 设置图例
+    leg = legend(['${' char(posArray(i)) '}$'], ['${' char(posArray(i)) '}_d$']);
+    set(leg, 'Interpreter', 'latex'); % 设置LaTeX解释器
+end
+sgtitle('The responses of damping');
+% fig11 = figure(11);
+% colors = {'b', 'g', 'r', 'c', 'm', 'y'}; % 不同的颜色
+
+% for i = 1:6
+%     subplot(3,2,i);
+%     hold on;
+%     % 绘制q和qd
+%     plot(res.t, res.pd(:,i), colors{i}); 
+
+%     xlabel('Time (s)');
+%     ylabel('pe');
+%    % 设置图例
+%     leg = legend(['${' char(posArray(i)) '}$'], ['${' char(posArray(i)) '}_d$']);
+%     set(leg, 'Interpreter', 'latex'); % 设置LaTeX解释器
+% end
+% sgtitle('The responses of pe');
 saveas(fig1, ['Results/' '1.jpg']);
 saveas(fig2, ['Results/' '2.jpg']);
 saveas(fig3, ['Results/' '3.jpg']);
@@ -204,3 +239,6 @@ saveas(fig4, ['Results/' '4.jpg']);
 saveas(fig5, ['Results/' '5.jpg']);
 saveas(fig6, ['Results/' '6.jpg']);
 saveas(fig7, ['Results/' '7.jpg']);
+saveas(fig8, ['Results/' '8.jpg']);
+saveas(fig9, ['Results/' '9.jpg']);
+saveas(fig10, ['Results/' '10.jpg']);

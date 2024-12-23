@@ -30,9 +30,9 @@ ctrl.dpddq = matlabFunction(jacobian(ctrl.pd(t_sym,q_sym),q_sym),'vars',[{t_sym}
 %% Define Passivity-based sliding mode controller
 %VI. NUMERICAL EXAMPLE Case1 and K
  %K=tril(ones(6));
- alpha=diag([500000;500000;500000;500000;500000;500000])*0.05;
- K=diag([500;500;500;500;500;300])*0.1;
-beta = 10000*0.05;
+ alpha=diag([500000;500000;500000;500000;500000;1])*0.01;
+ K=diag([500;500;500;500;500;1])*0.1;
+beta = 10000*0.1;
 gamma = 3;
 delta = 1;
 ctrl.phi=@(t,q,p) alpha*ctrl.eq(t,q) + K*ctrl.ep(t,q,p) + beta.*ctrl.eq(t,q).^(gamma/delta);%Here q is a variable to be determined
@@ -43,32 +43,34 @@ dphidep = matlabFunction(jacobian(ctrl.phi(t_sym,q_sym,p_sym),p_sym),'vars',{p_s
 %Replace the variable to be determined q with eq(\tilde \q)
 
 %compute the Lambda from eq.(22)
-   %   K3 = diag([5;5;5;5;5;5]);
-       K3 = diag([0;0;0;0;0;0]);
-   %  ctrl.Kd =@(t,q) K3 + 100*(1-gbellmf(ctrl.eq(t,q),[2.5,0.9,0])).*K3;
-  ctrl.Kd = @(t,q) K3;
-he=sym(0.5*(dphideq(t_sym,q_sym)*(ctrl.T(q_sym)))*dphidep(p_sym)');%这里的系数对系统收敛到滑模面上有影响
+      K3 = [5;5;5;5;5;5];
 
+           ctrl.Kd =@(t,q) K3 + (tanh(5*log(1+abs(ctrl.eq(t,q))).^2-1)).^2.*K3;
+          % ctrl.Kd =@(t,q) K3.*(2- (tanh(2*log(1+abs(ctrl.eq(t,q))).^2-0)).^2);
+   % ctrl.Kd = @(t,q) [0;0;0;0;0;0];
+    % he=sym(0.5*(dphideq(t_sym,q_sym)*((diag(ctrl.Kd(t_sym,q_sym))+ctrl.D(q_sym))))*dphidep(p_sym)');%这里的系数对系统收敛到滑模面上有影响
+      he=sym(0.5*(dphideq(t_sym,q_sym)*(ctrl.T(q_sym)))*dphidep(p_sym)');%这里的系数对系统收敛到滑模面上有影响
 Lambda=matlabFunction(2*(he+he'),'vars',[{t_sym,q_sym,p_sym}]);
 
 %Compute the partial derivative of U
 normPhi=ctrl.phi(t_sym,q_sym,p_sym);
-mu= 0.6;
+mu= 0.8;
 % p_i = 0.5;
 % m_i = 0.5;
-% k4 = diag([2;2;2;2;2;2]);
-% k4 = -p_i*m_i*k4+p_i.*abs(ctrl.phi(t_sym,q_sym,p_sym));
 
-dUdPhi = matlabFunction(abs(ctrl.phi(t_sym,q_sym,p_sym)).^(1-mu).*((ctrl.phi(t_sym,q_sym,p_sym))/(sqrt(sum(normPhi.^2))))+k4*((ctrl.phi(t_sym,q_sym,p_sym))/(sqrt(sum(normPhi.^2)))),'vars',[{k4},{t_sym},{q_sym},{p_sym}]);
+
+dUdPhi = matlabFunction(4*abs(ctrl.phi(t_sym,q_sym,p_sym)).^(1-mu).*((ctrl.phi(t_sym,q_sym,p_sym))/(sqrt(sum(normPhi.^2))))+0.0*abs(ctrl.phi(t_sym,q_sym,p_sym)).^(1+mu).*((ctrl.phi(t_sym,q_sym,p_sym))/(sqrt(sum(normPhi.^2))))+k4*((ctrl.phi(t_sym,q_sym,p_sym))/(sqrt(sum(normPhi.^2)))),'vars',[{k4},{t_sym},{q_sym},{p_sym}]);
 % dUdPhi=matlabFunction((ctrl.phi(t_sym,q_sym,p_sym))/(sqrt(sum(normPhi.^2))),'vars',[{t_sym},{q_sym},{p_sym}]);%base TSMC's energy function  derivative
 %Then the feedback controller from eq.(23)
-   ctrl.v=@(k4,t,q,p) (-inv(dphidep(p))*Lambda(t,q,p)*dUdPhi(k4,t,q,p)+(ctrl.D(q))*ctrl.ep(t,q,p)-((inv(dphidep(p))*dphideq(t,q))*(ctrl.T(q)))*ctrl.ep(t,q,p));
-%   ctrl.v=@(t,q,p) -inv(dphidep(t,q,p))*Lambda(t,q,p)*dUdPhi(t,q,p)+(ctrl.D(q))*ctrl.ep(t,q, p)-((inv(dphidep(t,q,p))*dphidq())*ctrl.T(q))*ctrl.ep(t,q,p));
-   % ctrl.v=@(t,q,p) 0;
+           ctrl.v=@(k4,t,q,p) (-inv(dphidep(p))*Lambda(t,q,p)*dUdPhi(k4,t,q,p)+(ctrl.D(q))*ctrl.ep(t,q,p)-((inv(dphidep(p))*dphideq(t,q))*(diag(ctrl.Kd(t,q))+ctrl.D(q)))*ctrl.ep(t,q,p));
+          %  ctrl.v=@(k4,t,q,p) (-inv(dphidep(p))*Lambda(t,q,p)*dUdPhi(k4,t,q,p)+(ctrl.D(q))*ctrl.ep(t,q,p)-((inv(dphidep(p))*dphideq(t,q))*(ctrl.T(q)))*ctrl.ep(t,q,p));
+%  ctrl.v= @(k4,t,q,p) (-100000.*ctrl.ep(t,q,p));
+   %  ctrl.v=@(k4,t,q,p) 0;
 %input u from eq.(20)
- ctrl.u = @(k4,t,q,p) ctrl.G(q)\(ctrl.D(q)*ctrl.pd(t,q) + ctrl.dpddq(t,q)*(ctrl.T(q)*p) + ctrl.T(q)\ctrl.ddqd(t) + ctrl.T(q)'*sys.dVdq(q) + ctrl.v(k4,t,q,p)-ctrl.Kd(t,q)*ctrl.ep(t,q,p));
-% ctrl.u=@(t,q,p) ctrl.G(q)\(-Kd*p);
+   ctrl.u = @(k4,t,q,p) ctrl.G(q)\(ctrl.D(q)*ctrl.pd(t,q) + ctrl.dpddq(t,q)*(ctrl.T(q)*p) + ctrl.T(q)\ctrl.ddqd(t) + ctrl.T(q)'*sys.dVdq(q) + ctrl.v(k4,t,q,p));
+  % ctrl.u= @(k4,t,q,p) ctrl.G(q)\(-10.*ctrl.ep(t,q,p));
 % Define  closed-loop energy in eq.(24)
 ctrl.KE = @(t,q,p) 0.5*sum(ctrl.ep(t,q,p).^2);%kinetic energy
-ctrl.U=matlabFunction(sum(abs(normPhi))^(2-mu)+(sqrt(sum(normPhi.^2))),'vars',[{t_sym},{q_sym},{p_sym}]);%potential energy
+% ctrl.U=matlabFunction(sum(abs(normPhi))^(2-mu)+(sqrt(sum(normPhi.^2))),'vars',[{t_sym},{q_sym},{p_sym}]);%potential energy
+ctrl.U = @(t,q,p)  0;
 ctrl.Hd = @(t,q,p) ctrl.KE(t,q,p) + ctrl.U(t,q,p);

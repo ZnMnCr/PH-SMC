@@ -1,9 +1,9 @@
 function dxdt = plant(t,x,sys,ctrl)
     
     
-    % [J] = UpdateJacobian(x);
+%      [J] = UpdateJacobian(x);
    
-    %  [T,W]=TensionDistribution(J,u);
+%       [T,W]=TensionDistribution(J,u);
     q = x(1:6);
     p = x(7:12);
     q_hat1 = x(13:18);
@@ -15,10 +15,15 @@ function dxdt = plant(t,x,sys,ctrl)
     q_hat3 = x(49:54);
     p_hat3 = x(55:60);
     distur_hat3 = x(61:66);
-    k4 = x(67);
-    kMax = 4;
-    k4 = kMax*((k4 >= kMax) + (k4 < kMax).* (k4 / kMax));
+   kMax = 4;
+    k4 = kMax*((x(67) >= kMax) + (x(67) < kMax).* (x(67) / kMax)); 
+    if ctrl.selector ==1
      u = ctrl.u(k4,t,q,ctrl.p(q,p));
+
+      else
+       u = ctrl.u(t,q,ctrl.p(q,p));
+    end
+
      % CESO State Update
       z_hat1 = [sys.Hdq(q_hat1,p_hat1); sys.Hdp(q_hat1,p_hat1); distur_hat1];     % First Layer ESO State
       z_hat2 = [sys.Hdq(q_hat2,p_hat2); sys.Hdp(q_hat2,p_hat2); distur_hat2];     % Second Layer ESO State
@@ -30,13 +35,13 @@ function dxdt = plant(t,x,sys,ctrl)
           zeros(6),   zeros(6), zeros(6)];
     Bo = [zeros(6); sys.G(q); zeros(6)];
     % ESO增益矩阵
-    alpha = 6000;        % ESO 的扰动估计增益
+    alpha = 5000;        % ESO 的扰动估计增益
     l1 = 3*alpha;           % ESO 增益
     l2 = 3*alpha^2;
     l3 = alpha^3;   
     
 
-     u_comp = u - z_hat(13:end);
+     u_comp = u - z_hat(13:end)+sys.match_distur(t);
     
     dxdt =  sys.dx(q,p,u_comp,t);%Define ODE
 
@@ -53,15 +58,15 @@ function dxdt = plant(t,x,sys,ctrl)
     %   z_hat3_p = Ao * z_hat2 + Bo* (u) + Co.* [((abs(q_hat2 - q_hat3).^0.8).*sign(q_hat2 - q_hat3)+(q_hat2 - q_hat3));...
     %  (abs(q_hat2 - q_hat3).^0.7).*sign(q_hat2 - q_hat3)+((abs(q_hat2 - q_hat3).^0.7).*sign(q_hat2 - q_hat3)+(q_hat2 - q_hat3));...
     %  (abs(q_hat2 - q_hat3).^0.7).*sign(q_hat2 - q_hat3)+(abs(q_hat2 - q_hat3).^0.7).*sign(q_hat2 - q_hat3)+(abs(q_hat2 - q_hat3).^0.7).*sign(q_hat2 - q_hat3)];
-     z_hat1_p = Ao * z_hat1 + Bo* (u) + L1.*[(q - q_hat1);(q - q_hat1);(q - q_hat1)];
-     z_hat2_p = Ao * z_hat2 + Bo* (u)  + L1.* [(q_hat1 - q_hat2);(q_hat1 - q_hat2);(q_hat1 - q_hat2)];
-     z_hat3_p = Ao * z_hat3 + Bo* (u)  + L1.* [(q_hat2 - q_hat3);(q_hat2 - q_hat3);(q_hat2 - q_hat3)];
+%      z_hat1_p = Ao * z_hat1 + Bo* (u) + L1.*[(q - q_hat1);(q - q_hat1);(q - q_hat1)];
+%      z_hat2_p = Ao * z_hat2 + Bo* (u)  + L1.* [(q_hat1 - q_hat2);(q_hat1 - q_hat2);(q_hat1 - q_hat2)];
+%      z_hat3_p = Ao * z_hat3 + Bo* (u)  + L1.* [(q_hat2 - q_hat3);(q_hat2 - q_hat3);(q_hat2 - q_hat3)];
      
       m_i = 1;
 
       
-      k4_dot = -m_i*k4+0.0000003*sum(abs(ctrl.phi(t,q,p)));
-      % z_hat1_p = zeros([18,1]);
-      % z_hat2_p = zeros([18,1]);
-      % z_hat3_p = zeros([18,1]);
+      k4_dot = -m_i*k4+0.0000002*sum(abs(ctrl.phi(t,q,p)));
+      z_hat1_p = zeros([18,1]);
+      z_hat2_p = zeros([18,1]);
+      z_hat3_p = zeros([18,1]);
     dxdt = [dxdt; z_hat1_p; z_hat2_p; z_hat3_p; k4_dot];

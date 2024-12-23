@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 2,
+            "activePatchIndex": 5,
             "patches": [
                 {
                     "date": 1732871782705,
@@ -16,6 +16,18 @@
                 {
                     "date": 1732872025206,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,7 +17,7 @@\n     res.pe(i,:) = ctrl.ep(res.t(i),res.q(i,:).',res.p(i,:).');\r\n     if ctrl.selector == 1 || ctrl.selector == 2\r\n         res.phi(i,:)=ctrl.phi(res.t(i),res.q(i,:).',res.p(i,:).');\r\n     end\r\n-    res.u(i,:)  =ctrl.u(res.k4.',res.t(i,:).',res.q(i,:).',ctrl.p(res.q(i,:).',res.p0(i,:).'));\r\n+    res.u(i,:)  =ctrl.u(res.k4(i),res.t(i,:).',res.q(i,:).',ctrl.p(res.q(i,:).',res.p0(i,:).'));\r\n      res.match_distur(i,:) =sys.match_distur(res.t(i,:).');\r\n end\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1733109905642,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,7 +17,8 @@\n     res.pe(i,:) = ctrl.ep(res.t(i),res.q(i,:).',res.p(i,:).');\r\n     if ctrl.selector == 1 || ctrl.selector == 2\r\n         res.phi(i,:)=ctrl.phi(res.t(i),res.q(i,:).',res.p(i,:).');\r\n     end\r\n+    res.Kd(i,:)=ctrl.Kd(res.t(i),res.q(i,:).');\r\n     res.u(i,:)  =ctrl.u(res.k4(i),res.t(i,:).',res.q(i,:).',ctrl.p(res.q(i,:).',res.p0(i,:).'));\r\n      res.match_distur(i,:) =sys.match_distur(res.t(i,:).');\r\n end\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1733579757978,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -0,0 +1,28 @@\n+function [res]=CompulateData(res,sys,ctrl)\r\n+res.H = zeros(length(res.t),1);\r\n+res.Hd = zeros(length(res.t),1);\r\n+res.Hp = zeros(length(res.t),1);\r\n+res.qd = zeros(length(res.t),6);\r\n+res.qe = zeros(length(res.t),6);\r\n+res.p =zeros(length(res.t),6);\r\n+res.phi=zeros(length(res.t),6);\r\n+res.Kd = zeros(length(res.t),6);\r\n+for i=1:length(res.t)\r\n+    res.H(i)    = sys.H(res.q(i,:).',res.p0(i,:).');\r\n+    res.p(i,:)  = (ctrl.T(res.q(i,:).')'*res.p0(i,:).').';\r\n+    res.Hd(i) = ctrl.Hd(res.t(i),res.q(i,:).',res.p(i,:).');\r\n+    res.qd(i,:) = ctrl.qd(res.t(i)).';\r\n+    res.pd(i,:) =ctrl.pd(res.t(i),ctrl.qd(res.t(i))).';\r\n+    res.qe(i,:) = res.q(i,:) - res.qd(i,:);\r\n+    res.pe(i,:) = ctrl.ep(res.t(i),res.q(i,:).',res.p(i,:).');\r\n+    if ctrl.selector == 1 || ctrl.selector == 2\r\n+        res.phi(i,:)=ctrl.phi(res.t(i),res.q(i,:).',res.p(i,:).');\r\n+    end\r\n+    res.Kd(i,:)=ctrl.Kd(res.t(i),res.q(i,:).');\r\n+    if ctrl.selector == 2\r\n+    res.u(i,:)  =ctrl.u(res.k4(i),res.t(i,:).',res.q(i,:).',ctrl.p(res.q(i,:).',res.p0(i,:).'));\r\n+    else\r\n+     res.u(i,:)  =ctrl.u(res.t(i,:).',res.q(i,:).',ctrl.p(res.q(i,:).',res.p0(i,:).'));   \r\n+    end\r\n+     res.match_distur(i,:) =sys.match_distur(res.t(i,:).');\r\n+end\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1733579817255,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -18,9 +18,9 @@\n     if ctrl.selector == 1 || ctrl.selector == 2\r\n         res.phi(i,:)=ctrl.phi(res.t(i),res.q(i,:).',res.p(i,:).');\r\n     end\r\n     res.Kd(i,:)=ctrl.Kd(res.t(i),res.q(i,:).');\r\n-    if ctrl.selector == 2\r\n+    if ctrl.selector == 1\r\n     res.u(i,:)  =ctrl.u(res.k4(i),res.t(i,:).',res.q(i,:).',ctrl.p(res.q(i,:).',res.p0(i,:).'));\r\n     else\r\n      res.u(i,:)  =ctrl.u(res.t(i,:).',res.q(i,:).',ctrl.p(res.q(i,:).',res.p0(i,:).'));   \r\n     end\r\n"
                 }
             ],
             "date": 1732871782705,

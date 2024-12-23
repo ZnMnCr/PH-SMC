@@ -1,0 +1,30 @@
+{
+    "sourceFile": "simulation_scripts/myOutputFcn.m",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 3,
+            "patches": [
+                {
+                    "date": 1732975848634,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1732976003324,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -0,0 +1,11 @@\n+% 迭代输出函数\r\n+function status = myOutputFcn(t, y, flag)\r\n+    if strcmp(flag, 'init')\r\n+        fprintf('Simulation started.\\n');\r\n+    elseif strcmp(flag, '')\r\n+        fprintf('At time %.2f \\n', t);\r\n+    elseif strcmp(flag, 'done')\r\n+        fprintf('Simulation finished.\\n');\r\n+    end\r\n+    status = [];\r\n+end\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1732976630280,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -0,0 +1,13 @@\n+\r\n+function status = myOutputFcn(t, y, flag)\r\n+    global shouldStop;  % 使用全局变量\r\n+    if strcmp(flag, 'init')\r\n+        fprintf('Simulation started.\\n');\r\n+    elseif strcmp(flag, 'done')\r\n+        fprintf('Simulation finished.\\n');\r\n+        shouldStop = true;  % 设置全局变量，跳出 while 循环\r\n+    elseif strcmp(flag, '')\r\n+        fprintf('At time %.2f \\n', t);\r\n+    end\r\n+    status = [];\r\n+end\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1732976728850,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,38 +1,13 @@\n \r\n function status = myOutputFcn(t, y, flag)\r\n-    global shouldStop;  % 使用全局变量\r\n+   \r\n     if strcmp(flag, 'init')\r\n         fprintf('Simulation started.\\n');\r\n     elseif strcmp(flag, 'done')\r\n         fprintf('Simulation finished.\\n');\r\n-        shouldStop = true;  % 设置全局变量，跳出 while 循环\r\n+  \r\n     elseif strcmp(flag, '')\r\n         fprintf('At time %.2f \\n', t);\r\n     end\r\n     status = [];\r\n-end\n-% 迭代输出函数\r\n-function status = myOutputFcn(t, y, flag)\r\n-    if strcmp(flag, 'init')\r\n-        fprintf('Simulation started.\\n');\r\n-    elseif strcmp(flag, '')\r\n-        fprintf('At time %.2f \\n', t);\r\n-    elseif strcmp(flag, 'done')\r\n-        fprintf('Simulation finished.\\n');\r\n-    end\r\n-    status = [];\r\n-end\n-% 迭代输出函数\r\n-function status = myOutputFcn(t, y, flag)\r\n-    if strcmp(flag, 'init')\r\n-        fprintf('Simulation started.\\n');\r\n-        status = 0;\r\n-    elseif strcmp(flag, '')\r\n-        fprintf('At time %.2f \\n', t);\r\n-        status = 0;\r\n-    elseif strcmp(flag, 'done')\r\n-        fprintf('Simulation finished.\\n');\r\n-        status = 1;\r\n-    end\r\n-   \r\n end\n\\ No newline at end of file\n"
+                }
+            ],
+            "date": 1732975848634,
+            "name": "Commit-0",
+            "content": "% 迭代输出函数\r\nfunction status = myOutputFcn(t, y, flag)\r\n    if strcmp(flag, 'init')\r\n        fprintf('Simulation started.\\n');\r\n        status = 0;\r\n    elseif strcmp(flag, '')\r\n        fprintf('At time %.2f \\n', t);\r\n        status = 0;\r\n    elseif strcmp(flag, 'done')\r\n        fprintf('Simulation finished.\\n');\r\n        status = 1;\r\n    end\r\n   \r\nend"
+        }
+    ]
+}

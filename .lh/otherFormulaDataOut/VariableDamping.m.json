@@ -1,0 +1,130 @@
+{
+    "sourceFile": "otherFormulaDataOut/VariableDamping.m",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 28,
+            "patches": [
+                {
+                    "date": 1733486342056,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1733486352718,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -11,6 +11,25 @@\n set(0,'DefaultAxesLineWidth',0.5);\r\n set(0,'defaultAxesXGrid','on')\r\n set(0,'defaultAxesYGrid','on')\r\n set(0,'defaultAxesNextPlot','add')\r\n+% 设定eq的取值范围，这里以 -10到10为例，步长为0.1，可以根据实际需求调整\r\n+eq = -10:0.1:10;\r\n+% 给定K3一个固定值，例如设为2，你可以按需更改\r\n+K3 = 2;\r\n \r\n+% 按照公式计算K的值\r\n+K = K3 + ( (tanh(2*log(1+abs(eq))).^2 - 2.5)).^2.*K3;\r\n \r\n+% 绘制图像\r\n+plot(eq, K);\r\n+xlabel('eq');\r\n+ylabel('K');\r\n+title('K vs eq');\r\n+\r\n+% 保存数据到mat文件（保存变量eq和K到名为data的结构体中）\r\n+save('data.mat', 'eq', 'K');\r\n+\r\n+% 如果想保存图像为常见图片格式，比如png，可以使用如下命令\r\n+% print('image.png', '-dpng');\r\n+\r\n+\r\n"
+                },
+                {
+                    "date": 1733486724036,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,18 +17,18 @@\n % 给定K3一个固定值，例如设为2，你可以按需更改\r\n K3 = 2;\r\n \r\n % 按照公式计算K的值\r\n-K = K3 + ( (tanh(2*log(1+abs(eq))).^2 - 2.5)).^2.*K3;\r\n+K =  (tanh(2*log(1+abs(eq))).^2 - 2.5).^2;\r\n \r\n % 绘制图像\r\n plot(eq, K);\r\n xlabel('eq');\r\n ylabel('K');\r\n title('K vs eq');\r\n \r\n % 保存数据到mat文件（保存变量eq和K到名为data的结构体中）\r\n-save('data.mat', 'eq', 'K');\r\n+% save('data.mat', 'eq', 'K');\r\n \r\n % 如果想保存图像为常见图片格式，比如png，可以使用如下命令\r\n % print('image.png', '-dpng');\r\n \r\n"
+                },
+                {
+                    "date": 1733486759912,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -0,0 +1,35 @@\n+\r\n+\r\n+clc\r\n+clear all\r\n+close all\r\n+% Set Figure default values\r\n+set(0,'DefaultTextInterpreter','latex');\r\n+set(0,'DefaultLegendInterpreter','latex');\r\n+set(0,'DefaultAxesFontSize',11);\r\n+set(0,'DefaultLineLineWidth',2.0);\r\n+set(0,'DefaultAxesLineWidth',0.5);\r\n+set(0,'defaultAxesXGrid','on')\r\n+set(0,'defaultAxesYGrid','on')\r\n+set(0,'defaultAxesNextPlot','add')\r\n+% 设定eq的取值范围，这里以 -10到10为例，步长为0.1，可以根据实际需求调整\r\n+eq = -10:0.1:10;\r\n+% 给定K3一个固定值，例如设为2，你可以按需更改\r\n+K3 = 2;\r\n+\r\n+% 按照公式计算K的值\r\n+K =  tanh(2*(log(1+abs(eq))).^2 - 2.5).^2;\r\n+\r\n+% 绘制图像\r\n+plot(eq, K);\r\n+xlabel('eq');\r\n+ylabel('K');\r\n+title('K vs eq');\r\n+\r\n+% 保存数据到mat文件（保存变量eq和K到名为data的结构体中）\r\n+% save('data.mat', 'eq', 'K');\r\n+\r\n+% 如果想保存图像为常见图片格式，比如png，可以使用如下命令\r\n+% print('image.png', '-dpng');\r\n+\r\n+\r\n"
+                },
+                {
+                    "date": 1733486817964,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,9 +17,9 @@\n % 给定K3一个固定值，例如设为2，你可以按需更改\r\n K3 = 2;\r\n \r\n % 按照公式计算K的值\r\n-K =  tanh(2*(log(1+abs(eq))).^2 - 2.5).^2;\r\n+K = K3 + tanh(2*(log(1+abs(eq))).^2 - 2.5).^2*K3;\r\n \r\n % 绘制图像\r\n plot(eq, K);\r\n xlabel('eq');\r\n@@ -32,39 +32,4 @@\n % 如果想保存图像为常见图片格式，比如png，可以使用如下命令\r\n % print('image.png', '-dpng');\r\n \r\n \r\n-\r\n-\r\n-clc\r\n-clear all\r\n-close all\r\n-% Set Figure default values\r\n-set(0,'DefaultTextInterpreter','latex');\r\n-set(0,'DefaultLegendInterpreter','latex');\r\n-set(0,'DefaultAxesFontSize',11);\r\n-set(0,'DefaultLineLineWidth',2.0);\r\n-set(0,'DefaultAxesLineWidth',0.5);\r\n-set(0,'defaultAxesXGrid','on')\r\n-set(0,'defaultAxesYGrid','on')\r\n-set(0,'defaultAxesNextPlot','add')\r\n-% 设定eq的取值范围，这里以 -10到10为例，步长为0.1，可以根据实际需求调整\r\n-eq = -10:0.1:10;\r\n-% 给定K3一个固定值，例如设为2，你可以按需更改\r\n-K3 = 2;\r\n-\r\n-% 按照公式计算K的值\r\n-K =  (tanh(2*log(1+abs(eq))).^2 - 2.5).^2;\r\n-\r\n-% 绘制图像\r\n-plot(eq, K);\r\n-xlabel('eq');\r\n-ylabel('K');\r\n-title('K vs eq');\r\n-\r\n-% 保存数据到mat文件（保存变量eq和K到名为data的结构体中）\r\n-% save('data.mat', 'eq', 'K');\r\n-\r\n-% 如果想保存图像为常见图片格式，比如png，可以使用如下命令\r\n-% print('image.png', '-dpng');\r\n-\r\n-\r\n"
+                },
+                {
+                    "date": 1733486848078,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -12,9 +12,9 @@\n set(0,'defaultAxesXGrid','on')\r\n set(0,'defaultAxesYGrid','on')\r\n set(0,'defaultAxesNextPlot','add')\r\n % 设定eq的取值范围，这里以 -10到10为例，步长为0.1，可以根据实际需求调整\r\n-eq = -10:0.1:10;\r\n+eq = -10:0.05:10;\r\n % 给定K3一个固定值，例如设为2，你可以按需更改\r\n K3 = 2;\r\n \r\n % 按照公式计算K的值\r\n"
+                },
+                {
+                    "date": 1733486863134,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -26,9 +26,9 @@\n ylabel('K');\r\n title('K vs eq');\r\n \r\n % 保存数据到mat文件（保存变量eq和K到名为data的结构体中）\r\n-% save('data.mat', 'eq', 'K');\r\n+ save('data.mat', 'eq', 'K');\r\n \r\n % 如果想保存图像为常见图片格式，比如png，可以使用如下命令\r\n % print('image.png', '-dpng');\r\n \r\n"
+                },
+                {
+                    "date": 1733486878222,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -0,0 +1,35 @@\n+\r\n+\r\n+clc\r\n+clear all\r\n+close all\r\n+% Set Figure default values\r\n+set(0,'DefaultTextInterpreter','latex');\r\n+set(0,'DefaultLegendInterpreter','latex');\r\n+set(0,'DefaultAxesFontSize',11);\r\n+set(0,'DefaultLineLineWidth',2.0);\r\n+set(0,'DefaultAxesLineWidth',0.5);\r\n+set(0,'defaultAxesXGrid','on')\r\n+set(0,'defaultAxesYGrid','on')\r\n+set(0,'defaultAxesNextPlot','add')\r\n+% 设定eq的取值范围，这里以 -10到10为例，步长为0.1，可以根据实际需求调整\r\n+eq = -10:0.05:10;\r\n+% 给定K3一个固定值，例如设为2，你可以按需更改\r\n+K3 = 2;\r\n+\r\n+% 按照公式计算K的值\r\n+K = K3 + tanh(2*(log(1+abs(eq))).^2 - 2.5).^2*K3;\r\n+\r\n+% 绘制图像\r\n+plot(eq, K);\r\n+xlabel('eq');\r\n+ylabel('K');\r\n+title('K vs eq');\r\n+\r\n+% 保存数据到mat文件（保存变量eq和K到名为data的结构体中）\r\n+ save('VD.mat', 'eq', 'K');\r\n+\r\n+% 如果想保存图像为常见图片格式，比如png，可以使用如下命令\r\n+% print('image.png', '-dpng');\r\n+\r\n+\r\n"
+                },
+                {
+                    "date": 1733487371184,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -0,0 +1,35 @@\n+\r\n+\r\n+clc\r\n+clear all\r\n+close all\r\n+% Set Figure default values\r\n+set(0,'DefaultTextInterpreter','latex');\r\n+set(0,'DefaultLegendInterpreter','latex');\r\n+set(0,'DefaultAxesFontSize',11);\r\n+set(0,'DefaultLineLineWidth',2.0);\r\n+set(0,'DefaultAxesLineWidth',0.5);\r\n+set(0,'defaultAxesXGrid','on')\r\n+set(0,'defaultAxesYGrid','on')\r\n+set(0,'defaultAxesNextPlot','add')\r\n+% 设定eq的取值范围，这里以 -10到10为例，步长为0.1，可以根据实际需求调整\r\n+eq = -10:0.05:10;\r\n+% 给定K3一个固定值，例如设为2，你可以按需更改\r\n+K3 = 2;\r\n+\r\n+% 按照公式计算K的值\r\n+K = K3 + tanh(1*(log(1+abs(eq))).^2 - 2.5).^2*K3;\r\n+\r\n+% 绘制图像\r\n+plot(eq, K);\r\n+xlabel('eq');\r\n+ylabel('K');\r\n+title('K vs eq');\r\n+\r\n+% 保存数据到mat文件（保存变量eq和K到名为data的结构体中）\r\n+ save('VDa1b25.mat', 'eq', 'K');\r\n+\r\n+% 如果想保存图像为常见图片格式，比如png，可以使用如下命令\r\n+% print('image.png', '-dpng');\r\n+\r\n+\r\n"
+                },
+                {
+                    "date": 1733487441982,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,9 +17,9 @@\n % 给定K3一个固定值，例如设为2，你可以按需更改\r\n K3 = 2;\r\n \r\n % 按照公式计算K的值\r\n-K = K3 + tanh(1*(log(1+abs(eq))).^2 - 2.5).^2*K3;\r\n+K = K3 + tanh(5*(log(1+abs(eq))).^2 - 2.5).^2*K3;\r\n \r\n % 绘制图像\r\n plot(eq, K);\r\n xlabel('eq');\r\n"
+                },
+                {
+                    "date": 1733487455480,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -26,80 +26,10 @@\n ylabel('K');\r\n title('K vs eq');\r\n \r\n % 保存数据到mat文件（保存变量eq和K到名为data的结构体中）\r\n- save('VDa1b25.mat', 'eq', 'K');\r\n+ save('VDa5b25.mat', 'eq', 'K');\r\n \r\n % 如果想保存图像为常见图片格式，比如png，可以使用如下命令\r\n % print('image.png', '-dpng');\r\n \r\n \r\n-\r\n-\r\n-clc\r\n-clear all\r\n-close all\r\n-% Set Figure default values\r\n-set(0,'DefaultTextInterpreter','latex');\r\n-set(0,'DefaultLegendInterpreter','latex');\r\n-set(0,'DefaultAxesFontSize',11);\r\n-set(0,'DefaultLineLineWidth',2.0);\r\n-set(0,'DefaultAxesLineWidth',0.5);\r\n-set(0,'defaultAxesXGrid','on')\r\n-set(0,'defaultAxesYGrid','on')\r\n-set(0,'defaultAxesNextPlot','add')\r\n-% 设定eq的取值范围，这里以 -10到10为例，步长为0.1，可以根据实际需求调整\r\n-eq = -10:0.05:10;\r\n-% 给定K3一个固定值，例如设为2，你可以按需更改\r\n-K3 = 2;\r\n-\r\n-% 按照公式计算K的值\r\n-K = K3 + tanh(2*(log(1+abs(eq))).^2 - 2.5).^2*K3;\r\n-\r\n-% 绘制图像\r\n-plot(eq, K);\r\n-xlabel('eq');\r\n-ylabel('K');\r\n-title('K vs eq');\r\n-\r\n-% 保存数据到mat文件（保存变量eq和K到名为data的结构体中）\r\n- save('VD.mat', 'eq', 'K');\r\n-\r\n-% 如果想保存图像为常见图片格式，比如png，可以使用如下命令\r\n-% print('image.png', '-dpng');\r\n-\r\n-\r\n-\r\n-\r\n-clc\r\n-clear all\r\n-close all\r\n-% Set Figure default values\r\n-set(0,'DefaultTextInterpreter','latex');\r\n-set(0,'DefaultLegendInterpreter','latex');\r\n-set(0,'DefaultAxesFontSize',11);\r\n-set(0,'DefaultLineLineWidth',2.0);\r\n-set(0,'DefaultAxesLineWidth',0.5);\r\n-set(0,'defaultAxesXGrid','on')\r\n-set(0,'defaultAxesYGrid','on')\r\n-set(0,'defaultAxesNextPlot','add')\r\n-% 设定eq的取值范围，这里以 -10到10为例，步长为0.1，可以根据实际需求调整\r\n-eq = -10:0.05:10;\r\n-% 给定K3一个固定值，例如设为2，你可以按需更改\r\n-K3 = 2;\r\n-\r\n-% 按照公式计算K的值\r\n-K = K3 + tanh(2*(log(1+abs(eq))).^2 - 2.5).^2*K3;\r\n-\r\n-% 绘制图像\r\n-plot(eq, K);\r\n-xlabel('eq');\r\n-ylabel('K');\r\n-title('K vs eq');\r\n-\r\n-% 保存数据到mat文件（保存变量eq和K到名为data的结构体中）\r\n- save('data.mat', 'eq', 'K');\r\n-\r\n-% 如果想保存图像为常见图片格式，比如png，可以使用如下命令\r\n-% print('image.png', '-dpng');\r\n-\r\n-\r\n"
+                },
+                {
+                    "date": 1733487463572,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,18 +17,18 @@\n % 给定K3一个固定值，例如设为2，你可以按需更改\r\n K3 = 2;\r\n \r\n % 按照公式计算K的值\r\n-K = K3 + tanh(5*(log(1+abs(eq))).^2 - 2.5).^2*K3;\r\n+K = K3 + tanh(1*(log(1+abs(eq))).^2 - 2.5).^2*K3;\r\n \r\n % 绘制图像\r\n plot(eq, K);\r\n xlabel('eq');\r\n ylabel('K');\r\n title('K vs eq');\r\n \r\n % 保存数据到mat文件（保存变量eq和K到名为data的结构体中）\r\n- save('VDa5b25.mat', 'eq', 'K');\r\n+ save('VDa1b25.mat', 'eq', 'K');\r\n \r\n % 如果想保存图像为常见图片格式，比如png，可以使用如下命令\r\n % print('image.png', '-dpng');\r\n \r\n"
+                },
+                {
+                    "date": 1733487502189,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,9 +17,9 @@\n % 给定K3一个固定值，例如设为2，你可以按需更改\r\n K3 = 2;\r\n \r\n % 按照公式计算K的值\r\n-K = K3 + tanh(1*(log(1+abs(eq))).^2 - 2.5).^2*K3;\r\n+K = K3 + tanh(2*(log(1+abs(eq))).^2 - 1).^2*K3;\r\n \r\n % 绘制图像\r\n plot(eq, K);\r\n xlabel('eq');\r\n"
+                },
+                {
+                    "date": 1733487511519,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,9 +17,9 @@\n % 给定K3一个固定值，例如设为2，你可以按需更改\r\n K3 = 2;\r\n \r\n % 按照公式计算K的值\r\n-K = K3 + tanh(2*(log(1+abs(eq))).^2 - 1).^2*K3;\r\n+K = K3 + tanh(1*(log(1+abs(eq))).^2 - 2.5).^2*K3;\r\n \r\n % 绘制图像\r\n plot(eq, K);\r\n xlabel('eq');\r\n"
+                },
+                {
+                    "date": 1733487528328,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,18 +17,18 @@\n % 给定K3一个固定值，例如设为2，你可以按需更改\r\n K3 = 2;\r\n \r\n % 按照公式计算K的值\r\n-K = K3 + tanh(1*(log(1+abs(eq))).^2 - 2.5).^2*K3;\r\n+K = K3 + tanh(2*(log(1+abs(eq))).^2 - 1).^2*K3;\r\n \r\n % 绘制图像\r\n plot(eq, K);\r\n xlabel('eq');\r\n ylabel('K');\r\n title('K vs eq');\r\n \r\n % 保存数据到mat文件（保存变量eq和K到名为data的结构体中）\r\n- save('VDa1b25.mat', 'eq', 'K');\r\n+ save('VDa2b1.mat', 'eq', 'K');\r\n \r\n % 如果想保存图像为常见图片格式，比如png，可以使用如下命令\r\n % print('image.png', '-dpng');\r\n \r\n"
+                },
+                {
+                    "date": 1733487627338,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,18 +17,18 @@\n % 给定K3一个固定值，例如设为2，你可以按需更改\r\n K3 = 2;\r\n \r\n % 按照公式计算K的值\r\n-K = K3 + tanh(2*(log(1+abs(eq))).^2 - 1).^2*K3;\r\n+K = K3 + tanh(2*(log(1+abs(eq))).^2 - 0).^2*K3;\r\n \r\n % 绘制图像\r\n plot(eq, K);\r\n xlabel('eq');\r\n ylabel('K');\r\n title('K vs eq');\r\n \r\n % 保存数据到mat文件（保存变量eq和K到名为data的结构体中）\r\n- save('VDa2b1.mat', 'eq', 'K');\r\n+ save('VDa2b0.mat', 'eq', 'K');\r\n \r\n % 如果想保存图像为常见图片格式，比如png，可以使用如下命令\r\n % print('image.png', '-dpng');\r\n \r\n"
+                },
+                {
+                    "date": 1733487725249,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -0,0 +1,35 @@\n+\r\n+\r\n+clc\r\n+clear all\r\n+close all\r\n+% Set Figure default values\r\n+set(0,'DefaultTextInterpreter','latex');\r\n+set(0,'DefaultLegendInterpreter','latex');\r\n+set(0,'DefaultAxesFontSize',11);\r\n+set(0,'DefaultLineLineWidth',2.0);\r\n+set(0,'DefaultAxesLineWidth',0.5);\r\n+set(0,'defaultAxesXGrid','on')\r\n+set(0,'defaultAxesYGrid','on')\r\n+set(0,'defaultAxesNextPlot','add')\r\n+% 设定eq的取值范围，这里以 -10到10为例，步长为0.1，可以根据实际需求调整\r\n+eq = -10:0.05:10;\r\n+% 给定K3一个固定值，例如设为2，你可以按需更改\r\n+K3 = 2;\r\n+\r\n+% 按照公式计算K的值\r\n+K = K3 + tanh(2*(log(1+abs(eq))).^2 - 5).^2*K3;\r\n+\r\n+% 绘制图像\r\n+plot(eq, K);\r\n+xlabel('eq');\r\n+ylabel('K');\r\n+title('K vs eq');\r\n+\r\n+% 保存数据到mat文件（保存变量eq和K到名为data的结构体中）\r\n+ save('VDa2b5.mat', 'eq', 'K');\r\n+\r\n+% 如果想保存图像为常见图片格式，比如png，可以使用如下命令\r\n+% print('image.png', '-dpng');\r\n+\r\n+\r\n"
+                },
+                {
+                    "date": 1733492061316,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,54 +17,23 @@\n % 给定K3一个固定值，例如设为2，你可以按需更改\r\n K3 = 2;\r\n \r\n % 按照公式计算K的值\r\n-K = K3 + tanh(2*(log(1+abs(eq))).^2 - 5).^2*K3;\r\n-\r\n+K1 = K3 + tanh(2*(log(1+abs(eq))).^2 - 0).^2*K3;\r\n+K2 = K3 + tanh(2*(log(1+abs(eq))).^2 - 15).^2*K3;\r\n+K3 = K3 + tanh(2*(log(1+abs(eq))).^2 - 5).^2*K3;\r\n+K4 = K3 + tanh(1*(log(1+abs(eq))).^2 - 2.5).^2*K3;\r\n+K5 = K3 + tanh(2*(log(1+abs(eq))).^2 - 2.5).^2*K3;\r\n+K6 = K3 + tanh(5*(log(1+abs(eq))).^2 - 5).^2*K3;\r\n % 绘制图像\r\n-plot(eq, K);\r\n+plot(eq, K1,K2,K3,K4,K5,K6);\r\n xlabel('eq');\r\n ylabel('K');\r\n title('K vs eq');\r\n \r\n % 保存数据到mat文件（保存变量eq和K到名为data的结构体中）\r\n- save('VDa2b5.mat', 'eq', 'K');\r\n+ save('VDa2b5.mat', 'eq', 'K1','K2','K3','K4','K5','K6');\r\n \r\n % 如果想保存图像为常见图片格式，比如png，可以使用如下命令\r\n % print('image.png', '-dpng');\r\n \r\n \r\n-\r\n-\r\n-clc\r\n-clear all\r\n-close all\r\n-% Set Figure default values\r\n-set(0,'DefaultTextInterpreter','latex');\r\n-set(0,'DefaultLegendInterpreter','latex');\r\n-set(0,'DefaultAxesFontSize',11);\r\n-set(0,'DefaultLineLineWidth',2.0);\r\n-set(0,'DefaultAxesLineWidth',0.5);\r\n-set(0,'defaultAxesXGrid','on')\r\n-set(0,'defaultAxesYGrid','on')\r\n-set(0,'defaultAxesNextPlot','add')\r\n-% 设定eq的取值范围，这里以 -10到10为例，步长为0.1，可以根据实际需求调整\r\n-eq = -10:0.05:10;\r\n-% 给定K3一个固定值，例如设为2，你可以按需更改\r\n-K3 = 2;\r\n-\r\n-% 按照公式计算K的值\r\n-K = K3 + tanh(2*(log(1+abs(eq))).^2 - 0).^2*K3;\r\n-\r\n-% 绘制图像\r\n-plot(eq, K);\r\n-xlabel('eq');\r\n-ylabel('K');\r\n-title('K vs eq');\r\n-\r\n-% 保存数据到mat文件（保存变量eq和K到名为data的结构体中）\r\n- save('VDa2b0.mat', 'eq', 'K');\r\n-\r\n-% 如果想保存图像为常见图片格式，比如png，可以使用如下命令\r\n-% print('image.png', '-dpng');\r\n-\r\n-\r\n"
+                },
+                {
+                    "date": 1733492094300,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -18,9 +18,9 @@\n K3 = 2;\r\n \r\n % 按照公式计算K的值\r\n K1 = K3 + tanh(2*(log(1+abs(eq))).^2 - 0).^2*K3;\r\n-K2 = K3 + tanh(2*(log(1+abs(eq))).^2 - 15).^2*K3;\r\n+K2 = K3 + tanh(2*(log(1+abs(eq))).^2 - 1).^2*K3;\r\n K3 = K3 + tanh(2*(log(1+abs(eq))).^2 - 5).^2*K3;\r\n K4 = K3 + tanh(1*(log(1+abs(eq))).^2 - 2.5).^2*K3;\r\n K5 = K3 + tanh(2*(log(1+abs(eq))).^2 - 2.5).^2*K3;\r\n K6 = K3 + tanh(5*(log(1+abs(eq))).^2 - 5).^2*K3;\r\n"
+                },
+                {
+                    "date": 1733492159928,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -20,19 +20,19 @@\n % 按照公式计算K的值\r\n K1 = K3 + tanh(2*(log(1+abs(eq))).^2 - 0).^2*K3;\r\n K2 = K3 + tanh(2*(log(1+abs(eq))).^2 - 1).^2*K3;\r\n K3 = K3 + tanh(2*(log(1+abs(eq))).^2 - 5).^2*K3;\r\n-K4 = K3 + tanh(1*(log(1+abs(eq))).^2 - 2.5).^2*K3;\r\n+% K4 = K3 + tanh(1*(log(1+abs(eq))).^2 - 2.5).^2*K3;\r\n K5 = K3 + tanh(2*(log(1+abs(eq))).^2 - 2.5).^2*K3;\r\n K6 = K3 + tanh(5*(log(1+abs(eq))).^2 - 5).^2*K3;\r\n % 绘制图像\r\n-plot(eq, K1,K2,K3,K4,K5,K6);\r\n+plot(eq, K1,K2,K3,K5,K6);\r\n xlabel('eq');\r\n ylabel('K');\r\n title('K vs eq');\r\n \r\n % 保存数据到mat文件（保存变量eq和K到名为data的结构体中）\r\n- save('VDa2b5.mat', 'eq', 'K1','K2','K3','K4','K5','K6');\r\n+ save('VDa2b5.mat', 'eq', 'K1','K2','K3','K5','K6');\r\n \r\n % 如果想保存图像为常见图片格式，比如png，可以使用如下命令\r\n % print('image.png', '-dpng');\r\n \r\n"
+                },
+                {
+                    "date": 1733492171494,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -21,18 +21,18 @@\n K1 = K3 + tanh(2*(log(1+abs(eq))).^2 - 0).^2*K3;\r\n K2 = K3 + tanh(2*(log(1+abs(eq))).^2 - 1).^2*K3;\r\n K3 = K3 + tanh(2*(log(1+abs(eq))).^2 - 5).^2*K3;\r\n % K4 = K3 + tanh(1*(log(1+abs(eq))).^2 - 2.5).^2*K3;\r\n-K5 = K3 + tanh(2*(log(1+abs(eq))).^2 - 2.5).^2*K3;\r\n-K6 = K3 + tanh(5*(log(1+abs(eq))).^2 - 5).^2*K3;\r\n+% K5 = K3 + tanh(2*(log(1+abs(eq))).^2 - 2.5).^2*K3;\r\n+% K6 = K3 + tanh(5*(log(1+abs(eq))).^2 - 5).^2*K3;\r\n % 绘制图像\r\n-plot(eq, K1,K2,K3,K5,K6);\r\n+plot(eq, K1,K2,K3);\r\n xlabel('eq');\r\n ylabel('K');\r\n title('K vs eq');\r\n \r\n % 保存数据到mat文件（保存变量eq和K到名为data的结构体中）\r\n- save('VDa2b5.mat', 'eq', 'K1','K2','K3','K5','K6');\r\n+ save('VDa2b5.mat', 'eq', 'K1','K2','K3');\r\n \r\n % 如果想保存图像为常见图片格式，比如png，可以使用如下命令\r\n % print('image.png', '-dpng');\r\n \r\n"
+                },
+                {
+                    "date": 1733492206509,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,22 +17,22 @@\n % 给定K3一个固定值，例如设为2，你可以按需更改\r\n K3 = 2;\r\n \r\n % 按照公式计算K的值\r\n-K1 = K3 + tanh(2*(log(1+abs(eq))).^2 - 0).^2*K3;\r\n+% K1 = K3 + tanh(2*(log(1+abs(eq))).^2 - 0).^2*K3;\r\n K2 = K3 + tanh(2*(log(1+abs(eq))).^2 - 1).^2*K3;\r\n K3 = K3 + tanh(2*(log(1+abs(eq))).^2 - 5).^2*K3;\r\n % K4 = K3 + tanh(1*(log(1+abs(eq))).^2 - 2.5).^2*K3;\r\n % K5 = K3 + tanh(2*(log(1+abs(eq))).^2 - 2.5).^2*K3;\r\n % K6 = K3 + tanh(5*(log(1+abs(eq))).^2 - 5).^2*K3;\r\n % 绘制图像\r\n-plot(eq, K1,K2,K3);\r\n+plot(eq, K2,K3);\r\n xlabel('eq');\r\n ylabel('K');\r\n title('K vs eq');\r\n \r\n % 保存数据到mat文件（保存变量eq和K到名为data的结构体中）\r\n- save('VDa2b5.mat', 'eq', 'K1','K2','K3');\r\n+%  save('VDa2b5.mat', 'eq', 'K1','K2','K3');\r\n \r\n % 如果想保存图像为常见图片格式，比如png，可以使用如下命令\r\n % print('image.png', '-dpng');\r\n \r\n"
+                },
+                {
+                    "date": 1733492219685,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -24,9 +24,9 @@\n % K4 = K3 + tanh(1*(log(1+abs(eq))).^2 - 2.5).^2*K3;\r\n % K5 = K3 + tanh(2*(log(1+abs(eq))).^2 - 2.5).^2*K3;\r\n % K6 = K3 + tanh(5*(log(1+abs(eq))).^2 - 5).^2*K3;\r\n % 绘制图像\r\n-plot(eq, K2,K3);\r\n+plot(eq, K2,eq,K3);\r\n xlabel('eq');\r\n ylabel('K');\r\n title('K vs eq');\r\n \r\n"
+                },
+                {
+                    "date": 1733492240691,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,16 +17,16 @@\n % 给定K3一个固定值，例如设为2，你可以按需更改\r\n K3 = 2;\r\n \r\n % 按照公式计算K的值\r\n-% K1 = K3 + tanh(2*(log(1+abs(eq))).^2 - 0).^2*K3;\r\n+ K1 = K3 + tanh(2*(log(1+abs(eq))).^2 - 0).^2*K3;\r\n K2 = K3 + tanh(2*(log(1+abs(eq))).^2 - 1).^2*K3;\r\n K3 = K3 + tanh(2*(log(1+abs(eq))).^2 - 5).^2*K3;\r\n % K4 = K3 + tanh(1*(log(1+abs(eq))).^2 - 2.5).^2*K3;\r\n % K5 = K3 + tanh(2*(log(1+abs(eq))).^2 - 2.5).^2*K3;\r\n % K6 = K3 + tanh(5*(log(1+abs(eq))).^2 - 5).^2*K3;\r\n % 绘制图像\r\n-plot(eq, K2,eq,K3);\r\n+plot(eq,K1,eq, K2,eq,K3);\r\n xlabel('eq');\r\n ylabel('K');\r\n title('K vs eq');\r\n \r\n"
+                },
+                {
+                    "date": 1733492270589,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -20,9 +20,9 @@\n % 按照公式计算K的值\r\n  K1 = K3 + tanh(2*(log(1+abs(eq))).^2 - 0).^2*K3;\r\n K2 = K3 + tanh(2*(log(1+abs(eq))).^2 - 1).^2*K3;\r\n K3 = K3 + tanh(2*(log(1+abs(eq))).^2 - 5).^2*K3;\r\n-% K4 = K3 + tanh(1*(log(1+abs(eq))).^2 - 2.5).^2*K3;\r\n+ K4 = K3 + tanh(1*(log(1+abs(eq))).^2 - 2.5).^2*K3;\r\n % K5 = K3 + tanh(2*(log(1+abs(eq))).^2 - 2.5).^2*K3;\r\n % K6 = K3 + tanh(5*(log(1+abs(eq))).^2 - 5).^2*K3;\r\n % 绘制图像\r\n plot(eq,K1,eq, K2,eq,K3);\r\n"
+                },
+                {
+                    "date": 1733492287482,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -20,9 +20,9 @@\n % 按照公式计算K的值\r\n  K1 = K3 + tanh(2*(log(1+abs(eq))).^2 - 0).^2*K3;\r\n K2 = K3 + tanh(2*(log(1+abs(eq))).^2 - 1).^2*K3;\r\n K3 = K3 + tanh(2*(log(1+abs(eq))).^2 - 5).^2*K3;\r\n- K4 = K3 + tanh(1*(log(1+abs(eq))).^2 - 2.5).^2*K3;\r\n+ K4 = K3 + tanh(2*(log(1+abs(eq))).^2 - 2.5).^2*K3;\r\n % K5 = K3 + tanh(2*(log(1+abs(eq))).^2 - 2.5).^2*K3;\r\n % K6 = K3 + tanh(5*(log(1+abs(eq))).^2 - 5).^2*K3;\r\n % 绘制图像\r\n plot(eq,K1,eq, K2,eq,K3);\r\n"
+                },
+                {
+                    "date": 1733492292845,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -17,11 +17,11 @@\n % 给定K3一个固定值，例如设为2，你可以按需更改\r\n K3 = 2;\r\n \r\n % 按照公式计算K的值\r\n- K1 = K3 + tanh(2*(log(1+abs(eq))).^2 - 0).^2*K3;\r\n-K2 = K3 + tanh(2*(log(1+abs(eq))).^2 - 1).^2*K3;\r\n-K3 = K3 + tanh(2*(log(1+abs(eq))).^2 - 5).^2*K3;\r\n+%  K1 = K3 + tanh(2*(log(1+abs(eq))).^2 - 0).^2*K3;\r\n+% K2 = K3 + tanh(2*(log(1+abs(eq))).^2 - 1).^2*K3;\r\n+% K3 = K3 + tanh(2*(log(1+abs(eq))).^2 - 5).^2*K3;\r\n  K4 = K3 + tanh(2*(log(1+abs(eq))).^2 - 2.5).^2*K3;\r\n % K5 = K3 + tanh(2*(log(1+abs(eq))).^2 - 2.5).^2*K3;\r\n % K6 = K3 + tanh(5*(log(1+abs(eq))).^2 - 5).^2*K3;\r\n % 绘制图像\r\n"
+                },
+                {
+                    "date": 1733492344765,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -0,0 +1,39 @@\n+\r\n+\r\n+clc\r\n+clear all\r\n+close all\r\n+% Set Figure default values\r\n+set(0,'DefaultTextInterpreter','latex');\r\n+set(0,'DefaultLegendInterpreter','latex');\r\n+set(0,'DefaultAxesFontSize',11);\r\n+set(0,'DefaultLineLineWidth',2.0);\r\n+set(0,'DefaultAxesLineWidth',0.5);\r\n+set(0,'defaultAxesXGrid','on')\r\n+set(0,'defaultAxesYGrid','on')\r\n+set(0,'defaultAxesNextPlot','add')\r\n+% 设定eq的取值范围，这里以 -10到10为例，步长为0.1，可以根据实际需求调整\r\n+eq = -10:0.05:10;\r\n+% 给定K3一个固定值，例如设为2，你可以按需更改\r\n+K = 2;\r\n+\r\n+% 按照公式计算K的值\r\n+ K1 = K + tanh(2*(log(1+abs(eq))).^2 - 0).^2*K;\r\n+K2 = K + tanh(2*(log(1+abs(eq))).^2 - 1).^2*K;\r\n+K3 = K + tanh(2*(log(1+abs(eq))).^2 - 5).^2*K;\r\n+ K4 = K + tanh(2*(log(1+abs(eq))).^2 - 2.5).^2*K;\r\n+K5 = K + tanh(2*(log(1+abs(eq))).^2 - 2.5).^2*K;\r\n+K6 = K + tanh(5*(log(1+abs(eq))).^2 - 5).^2*K;\r\n+% 绘制图像\r\n+plot(eq,K1,eq, K2,eq,K3,eq,K4,eq,K5,eq,K6);\r\n+xlabel('eq');\r\n+ylabel('K');\r\n+title('K vs eq');\r\n+\r\n+% 保存数据到mat文件（保存变量eq和K到名为data的结构体中）\r\n+  save('VDa2b5.mat', 'eq', 'K1','K2','K3','K4','K5','K6' );\r\n+\r\n+% 如果想保存图像为常见图片格式，比如png，可以使用如下命令\r\n+% print('image.png', '-dpng');\r\n+\r\n+\r\n"
+                },
+                {
+                    "date": 1733492611733,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -20,11 +20,11 @@\n % 按照公式计算K的值\r\n  K1 = K + tanh(2*(log(1+abs(eq))).^2 - 0).^2*K;\r\n K2 = K + tanh(2*(log(1+abs(eq))).^2 - 1).^2*K;\r\n K3 = K + tanh(2*(log(1+abs(eq))).^2 - 5).^2*K;\r\n- K4 = K + tanh(2*(log(1+abs(eq))).^2 - 2.5).^2*K;\r\n+ K4 = K + tanh(1*(log(1+abs(eq))).^2 - 2.5).^2*K;\r\n K5 = K + tanh(2*(log(1+abs(eq))).^2 - 2.5).^2*K;\r\n-K6 = K + tanh(5*(log(1+abs(eq))).^2 - 5).^2*K;\r\n+K6 = K + tanh(5*(log(1+abs(eq))).^2 - 2.5).^2*K;\r\n % 绘制图像\r\n plot(eq,K1,eq, K2,eq,K3,eq,K4,eq,K5,eq,K6);\r\n xlabel('eq');\r\n ylabel('K');\r\n"
+                }
+            ],
+            "date": 1733486342056,
+            "name": "Commit-0",
+            "content": "\r\n\r\nclc\r\nclear all\r\nclose all\r\n% Set Figure default values\r\nset(0,'DefaultTextInterpreter','latex');\r\nset(0,'DefaultLegendInterpreter','latex');\r\nset(0,'DefaultAxesFontSize',11);\r\nset(0,'DefaultLineLineWidth',2.0);\r\nset(0,'DefaultAxesLineWidth',0.5);\r\nset(0,'defaultAxesXGrid','on')\r\nset(0,'defaultAxesYGrid','on')\r\nset(0,'defaultAxesNextPlot','add')\r\n\r\n\r\n"
+        }
+    ]
+}

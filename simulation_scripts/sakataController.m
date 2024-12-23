@@ -25,8 +25,8 @@ ctrl.dpddq = matlabFunction(jacobian(ctrl.pd(t_sym,q_sym),q_sym),'vars',[{t_sym}
 %% Define Passivity-based sliding mode controller
 %VI. NUMERICAL EXAMPLE Case1 and K
  %K=tril(ones(6));
- K=diag([500000;500000;500000;500000;500000;500000]);
- K2=diag([500;500;500;500;500;300]);
+ K=diag([500000;500000;500000;500000;500000;1])*0.4;
+ K2=diag([500;500;500;500;500;1]);
 
 ctrl.phi=@(t,q,p) K*ctrl.eq(t,q)+K2*ctrl.ep(t,q,p);%Here q is a variable to be determined
 %phi=@(q,p) K*q+tan(p);
@@ -34,8 +34,11 @@ ctrl.phi=@(t,q,p) K*ctrl.eq(t,q)+K2*ctrl.ep(t,q,p);%Here q is a variable to be d
 dphideq = matlabFunction(jacobian(ctrl.phi(t_sym,q_sym,p_sym),q_sym),'vars',{q_sym});
 dphidep = matlabFunction(jacobian(ctrl.phi(t_sym,q_sym,p_sym),p_sym),'vars',{p_sym});
 %Replace the variable to be determined q with eq(\tilde \q)
+    K3 = [5;5;5;5;5;5];
 
-
+            % ctrl.Kd =@(t,q) K3 + (tanh(1.2*log(1+abs(ctrl.eq(t,q))).^2-2)).^2.*K3;
+          ctrl.Kd =@(t,q) K3.*(2- (tanh(2*log(1+abs(ctrl.eq(t,q))).^2-0)).^2);
+      %   ctrl.Kd =@(t,q) 0;
 he=sym(0.5*(dphideq(q_sym)*(ctrl.T(q_sym)))*dphidep(p_sym)');%这里的系数对系统收敛到滑模面上有影响
 
 Lambda=matlabFunction(2*(he+he'),'vars',[{q_sym,p_sym}]);
