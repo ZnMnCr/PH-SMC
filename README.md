@@ -1,17 +1,15 @@
+# Major Modification Records
+## First Submission
+The content mainly includes the establishment of the PBSMC for the 2DOF manipulator, as well as the model and PBSMC of the CDPR.
 
-#   较大修改记录
-## 第一次提交
-内容主要有，建立了2DOF机械臂的PBSMC，以及CDPR的模型和PBSMC
-## 第二次提交
-将论文作者给我的代码传了上去
+## Third Submission
+Optimize the code structure and add some new functions in plotting and iteration.
 
-## 第三次提交
-优化代码结构，并在画图和迭代中加入了一些新的功能。
-## 第四次提交
-优化代码结构，使用了多个子函数脚本
-## 第五次提交
-加入多个控制器，并通过变量进行选择
-## 第六次提交
-实现级联观测器和简单的自适应律
-=======
+## Fourth Submission
+Optimize the code structure and use multiple sub-function scripts.
 
+## Fifth Submission
+Add multiple controllers and select them through variables.
+
+## Sixth Submission
+Implement the cascaded observer and a simple adaptive law.
